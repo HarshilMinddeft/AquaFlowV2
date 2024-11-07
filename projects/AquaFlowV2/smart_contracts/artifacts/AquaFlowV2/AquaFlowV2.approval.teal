@@ -1,0 +1,716 @@
+#pragma version 10
+
+smart_contracts.AquaFlowV2.contract.AquaFlowV2.approval_program:
+    txn ApplicationID
+    bnz main_entrypoint@2
+    callsub __init__
+
+main_entrypoint@2:
+    callsub __puya_arc4_router__
+    return
+
+
+// smart_contracts.AquaFlowV2.contract.AquaFlowV2.__puya_arc4_router__() -> uint64:
+__puya_arc4_router__:
+    proto 0 1
+    txn NumAppArgs
+    bz __puya_arc4_router___bare_routing@11
+    method "startStream(account,account,uint64,uint64)void"
+    method "startWithExistingId(uint64,account,account,uint64,uint64)void"
+    method "withdraw(uint64)void"
+    method "getStreamData(uint64)(uint64,uint64,uint64,uint64,address,address,uint64,bool,uint64)"
+    method "stopStream(uint64)void"
+    method "deleteStream(uint64)void"
+    method "getStreamEndTime(uint64)uint64"
+    txna ApplicationArgs 0
+    match __puya_arc4_router___startStream_route@2 __puya_arc4_router___startWithExistingId_route@3 __puya_arc4_router___withdraw_route@4 __puya_arc4_router___getStreamData_route@5 __puya_arc4_router___stopStream_route@6 __puya_arc4_router___deleteStream_route@7 __puya_arc4_router___getStreamEndTime_route@8
+    int 0
+    retsub
+
+__puya_arc4_router___startStream_route@2:
+    txn OnCompletion
+    !
+    assert // OnCompletion is NoOp
+    txn ApplicationID
+    assert // is not creating
+    txna ApplicationArgs 1
+    btoi
+    txnas Accounts
+    txna ApplicationArgs 2
+    btoi
+    txnas Accounts
+    txna ApplicationArgs 3
+    btoi
+    txna ApplicationArgs 4
+    btoi
+    callsub startStream
+    int 1
+    retsub
+
+__puya_arc4_router___startWithExistingId_route@3:
+    txn OnCompletion
+    !
+    assert // OnCompletion is NoOp
+    txn ApplicationID
+    assert // is not creating
+    txna ApplicationArgs 1
+    btoi
+    txna ApplicationArgs 2
+    btoi
+    txnas Accounts
+    txna ApplicationArgs 3
+    btoi
+    txnas Accounts
+    txna ApplicationArgs 4
+    btoi
+    txna ApplicationArgs 5
+    btoi
+    callsub startWithExistingId
+    int 1
+    retsub
+
+__puya_arc4_router___withdraw_route@4:
+    txn OnCompletion
+    !
+    assert // OnCompletion is NoOp
+    txn ApplicationID
+    assert // is not creating
+    txna ApplicationArgs 1
+    btoi
+    callsub withdraw
+    int 1
+    retsub
+
+__puya_arc4_router___getStreamData_route@5:
+    txn OnCompletion
+    !
+    assert // OnCompletion is NoOp
+    txn ApplicationID
+    assert // is not creating
+    txna ApplicationArgs 1
+    btoi
+    callsub getStreamData
+    byte 0x151f7c75
+    swap
+    concat
+    log
+    int 1
+    retsub
+
+__puya_arc4_router___stopStream_route@6:
+    txn OnCompletion
+    !
+    assert // OnCompletion is NoOp
+    txn ApplicationID
+    assert // is not creating
+    txna ApplicationArgs 1
+    btoi
+    callsub stopStream
+    int 1
+    retsub
+
+__puya_arc4_router___deleteStream_route@7:
+    txn OnCompletion
+    !
+    assert // OnCompletion is NoOp
+    txn ApplicationID
+    assert // is not creating
+    txna ApplicationArgs 1
+    btoi
+    callsub deleteStream
+    int 1
+    retsub
+
+__puya_arc4_router___getStreamEndTime_route@8:
+    txn OnCompletion
+    !
+    assert // OnCompletion is NoOp
+    txn ApplicationID
+    assert // is not creating
+    txna ApplicationArgs 1
+    btoi
+    callsub getStreamEndTime
+    byte 0x151f7c75
+    swap
+    concat
+    log
+    int 1
+    retsub
+
+__puya_arc4_router___bare_routing@11:
+    txn OnCompletion
+    bnz __puya_arc4_router___after_if_else@15
+    txn ApplicationID
+    !
+    assert // is creating
+    int 1
+    retsub
+
+__puya_arc4_router___after_if_else@15:
+    int 0
+    retsub
+
+
+// smart_contracts.AquaFlowV2.contract.AquaFlowV2.startStream(streamCreator: bytes, recipient: bytes, rate: uint64, amount: uint64) -> void:
+startStream:
+    proto 4 0
+    txn Sender
+    frame_dig -4
+    ==
+    assert // Only creator can start a stream
+    frame_dig -2
+    assert // Stream rate must be greater than 0
+    frame_dig -1
+    assert // Stream amount must be greater than 0
+    int 0
+    byte "streamCounter"
+    app_global_get_ex
+    assert // check self.streamCounter exists
+    int 1
+    +
+    byte "streamCounter"
+    swap
+    app_global_put
+    int 0
+    byte "streamCounter"
+    app_global_get_ex
+    assert // check self.streamCounter exists
+    frame_dig -1
+    frame_dig -2
+    /
+    global LatestTimestamp
+    +
+    frame_dig -2
+    itob
+    swap
+    global LatestTimestamp
+    itob
+    swap
+    itob
+    swap
+    frame_dig -1
+    itob
+    cover 3
+    uncover 2
+    swap
+    concat
+    swap
+    concat
+    byte 0x0000000000000000
+    concat
+    frame_dig -3
+    concat
+    frame_dig -4
+    concat
+    swap
+    concat
+    byte 0x80
+    concat
+    byte 0x0000000000000000
+    concat
+    swap
+    itob
+    swap
+    box_put
+    retsub
+
+
+// smart_contracts.AquaFlowV2.contract.AquaFlowV2.startWithExistingId(streamId: uint64, streamCreator: bytes, recipient: bytes, rate: uint64, amount: uint64) -> void:
+startWithExistingId:
+    proto 5 0
+    txn Sender
+    frame_dig -4
+    ==
+    assert // Only creator can start a stream
+    frame_dig -2
+    assert // Stream rate must be greater than 0
+    frame_dig -1
+    assert // Stream amount must be greater than 0
+    frame_dig -5
+    itob
+    dup
+    box_get
+    assert // check self.streams entry exists
+    int 832
+    getbit
+    byte 0x00
+    int 0
+    uncover 2
+    setbit
+    int 0
+    getbit
+    int 1
+    ==
+    assert // Stream is Active
+    frame_dig -1
+    frame_dig -2
+    /
+    global LatestTimestamp
+    +
+    frame_dig -2
+    itob
+    swap
+    global LatestTimestamp
+    itob
+    swap
+    itob
+    swap
+    frame_dig -1
+    itob
+    cover 3
+    uncover 2
+    swap
+    concat
+    swap
+    concat
+    byte 0x0000000000000000
+    concat
+    frame_dig -3
+    concat
+    frame_dig -4
+    concat
+    swap
+    concat
+    byte 0x80
+    concat
+    byte 0x0000000000000000
+    concat
+    box_put
+    retsub
+
+
+// smart_contracts.AquaFlowV2.contract.AquaFlowV2.withdraw(streamId: uint64) -> void:
+withdraw:
+    proto 1 0
+    frame_dig -1
+    itob
+    dup
+    box_get
+    swap
+    dup
+    uncover 2
+    assert // check self.streams entry exists
+    dup
+    extract 32 32 // on error: Index access is out of bounds
+    dup
+    cover 2
+    txn Sender
+    ==
+    assert // Only the recipient can withdraw
+    frame_dig -1
+    callsub _calculateStreamedAmount
+    swap
+    extract 96 8 // on error: Index access is out of bounds
+    dup
+    uncover 2
+    itob
+    dup
+    cover 2
+    b<
+    bz withdraw_after_if_else@3
+    frame_dig 3
+    frame_bury 4
+
+withdraw_after_if_else@3:
+    frame_dig 4
+    dup
+    byte 0x0000000000000000
+    b>
+    assert // No available funds to withdraw
+    frame_dig 1
+    dup
+    cover 2
+    extract 24 8 // on error: Index access is out of bounds
+    btoi
+    swap
+    btoi
+    dup
+    cover 2
+    +
+    swap
+    frame_dig 3
+    btoi
+    dig 1
+    -
+    dig 3
+    extract 0 8 // on error: Index access is out of bounds
+    cover 3
+    dig 4
+    extract 8 8 // on error: Index access is out of bounds
+    cover 3
+    dig 5
+    extract 16 8 // on error: Index access is out of bounds
+    cover 4
+    uncover 2
+    itob
+    cover 5
+    dig 6
+    extract 64 32 // on error: Index access is out of bounds
+    cover 6
+    itob
+    cover 6
+    uncover 7
+    int 832
+    getbit
+    byte 0x00
+    int 0
+    uncover 2
+    setbit
+    cover 4
+    global LatestTimestamp
+    itob
+    cover 4
+    uncover 3
+    uncover 2
+    concat
+    uncover 2
+    concat
+    uncover 4
+    concat
+    frame_dig 2
+    dup
+    cover 4
+    concat
+    uncover 5
+    concat
+    uncover 5
+    concat
+    uncover 4
+    concat
+    uncover 2
+    concat
+    frame_dig 0
+    swap
+    box_put
+    itxn_begin
+    global CurrentApplicationAddress
+    int pay
+    itxn_field TypeEnum
+    byte 0x5769746864726177616c2066726f6d2073747265616d
+    itxn_field Note
+    itxn_field Sender
+    itxn_field Amount
+    itxn_field Receiver
+    int 0
+    itxn_field Fee
+    itxn_submit
+    retsub
+
+
+// smart_contracts.AquaFlowV2.contract.AquaFlowV2._calculateStreamedAmount(streamId: uint64) -> uint64:
+_calculateStreamedAmount:
+    proto 1 1
+    byte ""
+    dup
+    frame_dig -1
+    itob
+    box_get
+    swap
+    dup
+    uncover 2
+    assert // check self.streams entry exists
+    global LatestTimestamp
+    dup
+    cover 2
+    swap
+    extract 16 8 // on error: Index access is out of bounds
+    dup
+    uncover 2
+    itob
+    b<=
+    bz _calculateStreamedAmount_else_body@2
+    frame_dig 2
+    dup
+    extract 96 8 // on error: Index access is out of bounds
+    btoi
+    swap
+    extract 24 8 // on error: Index access is out of bounds
+    btoi
+    +
+    frame_bury 1
+    b _calculateStreamedAmount_after_if_else@3
+
+_calculateStreamedAmount_else_body@2:
+    frame_dig 2
+    dup
+    extract 8 8 // on error: Index access is out of bounds
+    btoi
+    frame_dig 3
+    swap
+    -
+    swap
+    extract 0 8 // on error: Index access is out of bounds
+    btoi
+    *
+    frame_bury 1
+
+_calculateStreamedAmount_after_if_else@3:
+    frame_dig 2
+    dup
+    extract 0 8 // on error: Index access is out of bounds
+    btoi
+    swap
+    frame_dig 4
+    btoi
+    swap
+    extract 8 8 // on error: Index access is out of bounds
+    btoi
+    -
+    *
+    dup
+    frame_bury 0
+    frame_dig 1
+    <
+    bz _calculateStreamedAmount_after_if_else@5
+    frame_dig 0
+    frame_bury 1
+
+_calculateStreamedAmount_after_if_else@5:
+    frame_dig 2
+    extract 24 8 // on error: Index access is out of bounds
+    btoi
+    frame_dig 1
+    swap
+    -
+    frame_bury 0
+    retsub
+
+
+// smart_contracts.AquaFlowV2.contract.AquaFlowV2.getStreamData(streamId: uint64) -> bytes:
+getStreamData:
+    proto 1 1
+    int 0
+    byte "streamCounter"
+    app_global_get_ex
+    assert // check self.streamCounter exists
+    frame_dig -1
+    >=
+    assert // Invalid stream ID
+    frame_dig -1
+    itob
+    box_get
+    assert // check self.streams entry exists
+    dup
+    extract 0 8 // on error: Index access is out of bounds
+    swap
+    dup
+    extract 8 8 // on error: Index access is out of bounds
+    swap
+    dup
+    extract 16 8 // on error: Index access is out of bounds
+    cover 2
+    dup
+    extract 24 8 // on error: Index access is out of bounds
+    cover 4
+    dup
+    extract 32 32 // on error: Index access is out of bounds
+    cover 5
+    dup
+    extract 64 32 // on error: Index access is out of bounds
+    cover 6
+    dup
+    extract 96 8 // on error: Index access is out of bounds
+    cover 7
+    dup
+    int 832
+    getbit
+    byte 0x00
+    int 0
+    uncover 2
+    setbit
+    cover 2
+    extract 105 8 // on error: Index access is out of bounds
+    cover 3
+    uncover 4
+    swap
+    concat
+    uncover 2
+    concat
+    uncover 3
+    concat
+    uncover 3
+    concat
+    uncover 3
+    concat
+    uncover 3
+    concat
+    swap
+    concat
+    swap
+    concat
+    retsub
+
+
+// smart_contracts.AquaFlowV2.contract.AquaFlowV2.stopStream(streamId: uint64) -> void:
+stopStream:
+    proto 1 0
+    byte ""
+    frame_dig -1
+    itob
+    dup
+    box_get
+    swap
+    dup
+    uncover 2
+    assert // check self.streams entry exists
+    extract 64 32 // on error: Index access is out of bounds
+    dup
+    txn Sender
+    ==
+    assert // Only creator can stop the stream
+    frame_dig -1
+    callsub _calculateStreamedAmount
+    dup
+    itob
+    byte 0x0000000000000000
+    b>
+    bz stopStream_after_if_else@3
+    itxn_begin
+    global CurrentApplicationAddress
+    frame_dig 2
+    extract 32 32 // on error: Index access is out of bounds
+    int pay
+    itxn_field TypeEnum
+    byte 0x46696e616c207061796d656e7420746f20726563697069656e74
+    itxn_field Note
+    frame_dig 4
+    itxn_field Amount
+    itxn_field Receiver
+    itxn_field Sender
+    int 0
+    itxn_field Fee
+    itxn_submit
+
+stopStream_after_if_else@3:
+    frame_dig 2
+    extract 96 8 // on error: Index access is out of bounds
+    btoi
+    frame_dig 4
+    -
+    dup
+    frame_bury 0
+    itob
+    byte 0x0000000000000000
+    b>
+    bz stopStream_after_if_else@6
+    itxn_begin
+    global CurrentApplicationAddress
+    int pay
+    itxn_field TypeEnum
+    byte 0x52656d61696e696e672066756e64732072657475726e656420746f2063726561746f72
+    itxn_field Note
+    frame_dig 0
+    itxn_field Amount
+    frame_dig 3
+    itxn_field Receiver
+    itxn_field Sender
+    int 0
+    itxn_field Fee
+    itxn_submit
+
+stopStream_after_if_else@6:
+    frame_dig 1
+    byte base32 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA===
+    box_put
+    retsub
+
+
+// smart_contracts.AquaFlowV2.contract.AquaFlowV2.deleteStream(streamId: uint64) -> void:
+deleteStream:
+    proto 1 0
+    byte ""
+    frame_dig -1
+    itob
+    dup
+    box_get
+    swap
+    dup
+    uncover 2
+    assert // check self.streams entry exists
+    extract 64 32 // on error: Index access is out of bounds
+    dup
+    txn Sender
+    ==
+    assert // Only creator can stop the stream
+    frame_dig -1
+    callsub _calculateStreamedAmount
+    dup
+    itob
+    byte 0x0000000000000000
+    b>
+    bz deleteStream_after_if_else@3
+    itxn_begin
+    global CurrentApplicationAddress
+    frame_dig 2
+    extract 32 32 // on error: Index access is out of bounds
+    int pay
+    itxn_field TypeEnum
+    byte 0x46696e616c207061796d656e7420746f20726563697069656e74
+    itxn_field Note
+    frame_dig 4
+    itxn_field Amount
+    itxn_field Receiver
+    itxn_field Sender
+    int 0
+    itxn_field Fee
+    itxn_submit
+
+deleteStream_after_if_else@3:
+    frame_dig 2
+    extract 96 8 // on error: Index access is out of bounds
+    btoi
+    frame_dig 4
+    -
+    dup
+    frame_bury 0
+    itob
+    byte 0x0000000000000000
+    b>
+    bz deleteStream_after_if_else@6
+    itxn_begin
+    global CurrentApplicationAddress
+    int pay
+    itxn_field TypeEnum
+    byte 0x52656d61696e696e672066756e64732072657475726e656420746f2073747265616d43726561746f72
+    itxn_field Note
+    frame_dig 0
+    itxn_field Amount
+    frame_dig 3
+    itxn_field Receiver
+    itxn_field Sender
+    int 0
+    itxn_field Fee
+    itxn_submit
+
+deleteStream_after_if_else@6:
+    frame_dig 1
+    box_del
+    pop
+    retsub
+
+
+// smart_contracts.AquaFlowV2.contract.AquaFlowV2.getStreamEndTime(streamId: uint64) -> bytes:
+getStreamEndTime:
+    proto 1 1
+    int 0
+    byte "streamCounter"
+    app_global_get_ex
+    assert // check self.streamCounter exists
+    frame_dig -1
+    >=
+    assert // Invalid stream ID
+    frame_dig -1
+    itob
+    box_get
+    assert // check self.streams entry exists
+    extract 16 8 // on error: Index access is out of bounds
+    retsub
+
+
+// smart_contracts.AquaFlowV2.contract.AquaFlowV2.__init__() -> void:
+__init__:
+    proto 0 0
+    byte "streamCounter"
+    int 0
+    app_global_put
+    retsub

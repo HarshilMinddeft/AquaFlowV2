@@ -1,0 +1,5 @@
+#pragma version 10
+
+smart_contracts.AquaFlowV2.contract.AquaFlowV2.clear_state_program:
+    int 1
+    return
