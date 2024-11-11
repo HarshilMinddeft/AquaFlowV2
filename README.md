@@ -1,4 +1,4 @@
-# Steam
+# AquaFlowV2
 
 Welcome to your new AlgoKit project!
 
