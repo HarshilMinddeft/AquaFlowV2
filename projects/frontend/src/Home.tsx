@@ -11,17 +11,19 @@ import ConnectWallet from './components/ConnectWallet'
 import BlinkBlurB from './components/Loders'
 import Nav from './components/Nav'
 import Transact from './components/Transact'
-import { SteamClient } from './contracts/Steam'
-import { create, deleteStreamApplication, startStream, stopStream } from './methods'
+import { AquaFlowV2Client } from './contracts/AquaFlowV2'
+import { startStream } from './methods'
 import { getAlgodConfigFromViteEnvironment } from './utils/network/getAlgoClientConfigs'
 interface HomeProps {}
 
 const Home: React.FC<HomeProps> = () => {
   const [openWalletModal, setOpenWalletModal] = useState<boolean>(false)
   const [openDemoModal, setOpenDemoModal] = useState<boolean>(false)
-  const [appId, setAppId] = useState<number>(0)
+  const [appId, setAppId] = useState<number>(728805691)
+  const [streamId, setStreamId] = useState<bigint>(0n)
   const [inputAppId, setInputAppId] = useState<number | null>(null)
   const { activeAddress, signer } = useWallet()
+  const [sender, setSenderAddress] = useState<string>('')
   const [streamRate, setStreamRate] = useState<bigint>(0n)
   const [isStreaming, setIsStreaming] = useState<number>(0)
   const [loding, setLoding] = useState<boolean>(false)
@@ -44,7 +46,6 @@ const Home: React.FC<HomeProps> = () => {
   const [navigationMod, setNavigationMod] = useState<string>('DeployApp')
   const [internalTxns, setInternalTxns] = useState<Array<{ amount: number; receiver: string }>>([])
 
-
   const toggleWalletModal = () => {
     setOpenWalletModal(!openWalletModal)
   }
@@ -53,12 +54,13 @@ const Home: React.FC<HomeProps> = () => {
   const algorand = algokit.AlgorandClient.fromConfig({ algodConfig })
   algorand.setDefaultSigner(signer)
 
-  const dmClient = new SteamClient(
+  const dmClient = new AquaFlowV2Client(
     {
       resolveBy: 'id',
       id: appId,
       sender: { addr: activeAddress!, signer },
     },
+
     algorand.client.algod,
   )
 
@@ -81,7 +83,7 @@ const Home: React.FC<HomeProps> = () => {
 
       if (appInfo) {
         // If application exists, set the app ID
-        setAppId(inputAppId)
+        // setAppId(inputAppId)
         toast.success(`App ID ${inputAppId} is valid!`)
       }
     } catch (error) {
@@ -98,29 +100,76 @@ const Home: React.FC<HomeProps> = () => {
     }
   }
 
-  // const validateAppId = async (inputAppId: number) => {
-  //   try {
-  //     // Fetch the application details using the input app ID
-  //     const appInfo = await algorand.client.algod.getApplicationByID(inputAppId).do()
+  async function fetchStreamData() {
+    try {
+      // const streamId = 1
+      const streamIdArray = new Uint8Array(8) // Creates an 8-byte array
+      new DataView(streamIdArray.buffer).setUint32(4, Number(streamId))
+      // Fetch the box data for the provided appId and streamId
+      const boxValueResponse = await algorand.client.algod.getApplicationBoxByName(appId, streamIdArray).do()
+      const NameofBox = boxValueResponse.name
+      const dataView = new DataView(NameofBox.buffer)
+      const decodedValue = dataView.getBigUint64(0, false)
+      console.log('Box Name decoded:', decodedValue)
+      console.log('Box Name:', boxValueResponse.name)
+      console.log('Box Value:', boxValueResponse.value)
 
-  //     if (appInfo) {
-  //       // If application exists, set the app ID
-  //       setAppId(inputAppId)
-  //       toast.success(`App ID ${inputAppId} is valid!`)
-  //     }
-  //   } catch (error) {
-  //     if (error instanceof Error) {
-  //       if (error.message.includes('404')) {
-  //         // If a 404 error occurs (application not found), show an error message
-  //         toast.error('App ID does not exist. Please enter a valid App ID.')
-  //         console.error('App ID not found:', error.message)
-  //       } else {
-  //         console.error('An error occurred while fetching the app ID:', error.message)
-  //         toast.error('Failed to validate App ID. Please try again.')
-  //       }
-  //     }
-  //   }
-  // }
+      const ValueofBox = boxValueResponse.value
+      const boxvalues = new DataView(ValueofBox.buffer)
+      const rate = Number(boxvalues.getBigUint64(0, false))
+      const startTime = Number(boxvalues.getBigUint64(8, false))
+      const endTime = Number(boxvalues.getBigUint64(16, false))
+      const withdrawnAmount = Number(boxvalues.getBigUint64(24, false))
+      const recipient = algosdk.encodeAddress(new Uint8Array(ValueofBox.slice(32, 64)))
+      const streamCreator = algosdk.encodeAddress(new Uint8Array(ValueofBox.slice(64, 96)))
+      const balance = Number(boxvalues.getBigUint64(96, false))
+      const isStreamingRaw = boxvalues.getUint8(104)
+      // const isStreaming = isStreamingRaw !== 0
+      const last_withdrawal_time = Number(boxvalues.getBigUint64(105, false))
+
+      setepochStreamfinishTime(startTime)
+      setepochStreamStartTime(endTime)
+
+      const convTotalwithdrawAmount = withdrawnAmount / 1000000
+      const convstreamalgoFlowRate = rate / 1000000
+      const convTotalContractbalance = balance / 1000000
+
+      // Convert Unix timestamps to human-readable dates
+      const formattedStreamStartTime = startTime ? dayjs.unix(startTime).format('MM/DD/YYYY, h:mm:ss A') : 'N/A'
+      const formattedStreamFinishTime = endTime ? dayjs.unix(endTime).format('MM/DD/YYYY, h:mm:ss A') : 'N/A'
+
+      setIsStreaming(isStreamingRaw)
+      setStreamContractBalance(convTotalContractbalance)
+      setStreamStartTime(formattedStreamStartTime)
+      setStreamFinishTime(formattedStreamFinishTime)
+      setStreamFlowRate(convstreamalgoFlowRate)
+      setTotalUserWithdraw(convTotalwithdrawAmount)
+
+      console.log('Rate', rate)
+      console.log('startTime', startTime)
+      console.log('endTime', endTime)
+      console.log('withdrawnAmount', withdrawnAmount)
+      console.log('recipient', recipient)
+      console.log('streamCreator', streamCreator)
+      console.log('balance', balance)
+      console.log('isStreaming', isStreaming)
+      console.log('last_withdrawal_time', last_withdrawal_time)
+    } catch (error) {
+      console.error('Error fetching box data:', error)
+      throw error
+    }
+  }
+  async function listBoxes() {
+    try {
+      const boxList = await algorand.client.algod.getApplicationBoxes(appId).do()
+      console.log('Box List:', boxList)
+      return boxList
+    } catch (error) {
+      console.error('Error listing boxes:', error)
+      throw error
+    }
+  }
+
   // const handleAppIdChange = (event: React.ChangeEvent<HTMLInputElement>) => {
   //   const inputAppId = Number(event.target.value)
   //   setAppId(inputAppId)
@@ -133,51 +182,51 @@ const Home: React.FC<HomeProps> = () => {
   // }
 
   // Create stream method reference
-  const createStream = async () => {
-    setLoding(true)
-    await create(algorand, dmClient, activeAddress!, setAppId)()
-    setLoding(false)
-  }
+  // const createStream = async () => {
+  //   setLoding(true)
+  //   await create(algorand, dmClient, activeAddress!, setAppId)()
+  //   setLoding(false)
+  // }
 
-  const funcStopStream = async () => {
-    try {
-      setLoding(true)
-      const transactions = await stopStream(algorand, dmClient, activeAddress!, appId, recipient)()
-      setInternalTxns(transactions)
-      setLoding(false)
-      await fetchContractGlobalStateData(dmClient)
-      toast.success('Current Stream Stopped')
-    } catch (error) {
-      if (error instanceof Error) {
-        setLoding(false)
-        if (error.message.includes('CreatorAddress; ==; assert')) {
-          console.error('Caught a URLTokenBaseHTTPError:', error.message)
-          toast.error('You are not owner of this stream')
-        } else {
-          console.error('An error occurred:', error.message)
-        }
-      } else {
-        console.error('An unknown error occurred:', error)
-      }
-    }
-  }
+  // const funcStopStream = async () => {
+  //   try {
+  //     setLoding(true)
+  //     const transactions = await stopStream(algorand, dmClient, activeAddress!, appId, recipient)()
+  //     setInternalTxns(transactions)
+  //     setLoding(false)
+  //     await fetchContractGlobalStateData(dmClient)
+  //     toast.success('Current Stream Stopped')
+  //   } catch (error) {
+  //     if (error instanceof Error) {
+  //       setLoding(false)
+  //       if (error.message.includes('CreatorAddress; ==; assert')) {
+  //         console.error('Caught a URLTokenBaseHTTPError:', error.message)
+  //         toast.error('You are not owner of this stream')
+  //       } else {
+  //         console.error('An error occurred:', error.message)
+  //       }
+  //     } else {
+  //       console.error('An unknown error occurred:', error)
+  //     }
+  //   }
+  // }
 
-  const funcdeleteStream = async () => {
-    try {
-      const deleteConfirmation = await deleteStreamApplication(algorand, dmClient, activeAddress!, appId)()
-      if (deleteConfirmation) {
-        console.log('Contract deletion confirmed:', deleteConfirmation)
-        // await fetchContractGlobalStateData(dmClient)
-        toast.success('Contract Deleted')
-        setAppId(0)
-      } else {
-        toast.error('You are not owner of this stream')
-      }
-    } catch (error) {
-      console.error('Error deleting contract:', error)
-      toast.error('Error deleting contract or Invalid User')
-    }
-  }
+  // const funcdeleteStream = async () => {
+  //   try {
+  //     const deleteConfirmation = await deleteStreamApplication(algorand, dmClient, activeAddress!, appId)()
+  //     if (deleteConfirmation) {
+  //       console.log('Contract deletion confirmed:', deleteConfirmation)
+  //       // await fetchContractGlobalStateData(dmClient)
+  //       toast.success('Contract Deleted')
+  //       setAppId(0)
+  //     } else {
+  //       toast.error('You are not owner of this stream')
+  //     }
+  //   } catch (error) {
+  //     console.error('Error deleting contract:', error)
+  //     toast.error('Error deleting contract or Invalid User')
+  //   }
+  // }
 
   // Start stream method reference
   const handleStartStream = async () => {
@@ -200,9 +249,11 @@ const Home: React.FC<HomeProps> = () => {
       // Try to start the stream
       toast.info('Confirm payment')
       setLoding(true)
-      await startStream(algorand, dmClient, activeAddress!, streamRate, recipient, amount, appId)()
+      const streamStarted = await startStream(algorand, dmClient, activeAddress!, sender, streamRate, recipient, amount, appId)()
+      setStreamId(streamStarted ?? 0n)
+      console.log('streamStarted', streamStarted)
       setLoding(false)
-      setIsStreaming(1) // Only set streaming state if startStream is successful
+      // setIsStreaming(0) // Only set streaming state if startStream is successful
     } catch (error) {
       if (error instanceof Error) {
         if (error.message.includes('URLTokenBaseHTTPError')) {
@@ -215,52 +266,53 @@ const Home: React.FC<HomeProps> = () => {
       }
     }
   }
+
   //FIF
-  const fetchIsStreaming = async (steamAbiClient: SteamClient) => {
-    if (activeAddress && appId > 0) {
-      const streamData = await steamAbiClient.getGlobalState()
-      const isStreaming = streamData.isStreaming?.asNumber() ?? 0
-      setIsStreaming(isStreaming)
-    }
-  }
+  // const fetchIsStreaming = async (steamAbiClient: AquaFlowV2Client) => {
+  //   if (activeAddress && appId > 0) {
+  //     const streamData = await steamAbiClient.getGlobalState()
+  //     const isStreaming = streamData.isStreaming?.asNumber() ?? 0
+  //     setIsStreaming(isStreaming)
+  //   }
+  // }
   //FIF
-  const fetchContractGlobalStateData = async (steamAbiClient: SteamClient) => {
-    if (activeAddress) {
-      const streamData = await steamAbiClient.getGlobalState()
-      const isStreaming = streamData.isStreaming?.asNumber() ?? 0
-      const TotalContractbalance = streamData.balance?.asNumber() ?? 0
-      const streamfinishTime = streamData.endTime?.asNumber() ?? 0
-      const streamstartTime = streamData.startTime?.asNumber() ?? 0
-      const streamalgoFlowRate = streamData.streamRate?.asNumber() ?? 0
-      const TotalwithdrawAmount = streamData.withdrawnAmount?.asNumber() ?? 0
-      setepochStreamfinishTime(streamfinishTime)
-      setepochStreamStartTime(streamstartTime)
+  // const fetchContractGlobalStateData = async (steamAbiClient: AquaFlowV2Client) => {
+  //   if (activeAddress) {
+  //     const streamData = await steamAbiClient.getGlobalState()
+  //     const isStreaming = streamData.isStreaming?.asNumber() ?? 0
+  //     const TotalContractbalance = streamData.balance?.asNumber() ?? 0
+  //     const streamfinishTime = streamData.endTime?.asNumber() ?? 0
+  //     const streamstartTime = streamData.startTime?.asNumber() ?? 0
+  //     const streamalgoFlowRate = streamData.streamRate?.asNumber() ?? 0
+  //     const TotalwithdrawAmount = streamData.withdrawnAmount?.asNumber() ?? 0
+  //     setepochStreamfinishTime(streamfinishTime)
+  //     setepochStreamStartTime(streamstartTime)
 
-      const recipientBytes = streamData.recipient?.asByteArray()
-      if (recipientBytes) {
-        const userAddress = algosdk.encodeAddress(new Uint8Array(recipientBytes))
-        setReciverAddress(userAddress)
-      } else {
-        console.log('Recipient address not found or is invalid.')
-      }
+  //     const recipientBytes = streamData.recipient?.asByteArray()
+  //     if (recipientBytes) {
+  //       const userAddress = algosdk.encodeAddress(new Uint8Array(recipientBytes))
+  //       setReciverAddress(userAddress)
+  //     } else {
+  //       console.log('Recipient address not found or is invalid.')
+  //     }
 
-      // Convert in Algos
-      const convTotalwithdrawAmount = TotalwithdrawAmount / 1000000
-      const convstreamalgoFlowRate = streamalgoFlowRate / 1000000
-      const convTotalContractbalance = TotalContractbalance / 1000000
+  //     // Convert in Algos
+  //     const convTotalwithdrawAmount = TotalwithdrawAmount / 1000000
+  //     const convstreamalgoFlowRate = streamalgoFlowRate / 1000000
+  //     const convTotalContractbalance = TotalContractbalance / 1000000
 
-      // Convert Unix timestamps to human-readable dates
-      const formattedStreamStartTime = streamstartTime ? dayjs.unix(streamstartTime).format('MM/DD/YYYY, h:mm:ss A') : 'N/A'
-      const formattedStreamFinishTime = streamfinishTime ? dayjs.unix(streamfinishTime).format('MM/DD/YYYY, h:mm:ss A') : 'N/A'
+  //     // Convert Unix timestamps to human-readable dates
+  //     const formattedStreamStartTime = streamstartTime ? dayjs.unix(streamstartTime).format('MM/DD/YYYY, h:mm:ss A') : 'N/A'
+  //     const formattedStreamFinishTime = streamfinishTime ? dayjs.unix(streamfinishTime).format('MM/DD/YYYY, h:mm:ss A') : 'N/A'
 
-      setIsStreaming(isStreaming)
-      setStreamContractBalance(convTotalContractbalance)
-      setStreamStartTime(formattedStreamStartTime)
-      setStreamFinishTime(formattedStreamFinishTime)
-      setStreamFlowRate(convstreamalgoFlowRate)
-      setTotalUserWithdraw(convTotalwithdrawAmount)
-    }
-  }
+  //     setIsStreaming(isStreaming)
+  //     setStreamContractBalance(convTotalContractbalance)
+  //     setStreamStartTime(formattedStreamStartTime)
+  //     setStreamFinishTime(formattedStreamFinishTime)
+  //     setStreamFlowRate(convstreamalgoFlowRate)
+  //     setTotalUserWithdraw(convTotalwithdrawAmount)
+  //   }
+  // }
   //FIF
   const calculateStreamEndTime = () => {
     if (streamRate > 0n && amount > 0n) {
@@ -341,15 +393,17 @@ const Home: React.FC<HomeProps> = () => {
 
   useEffect(() => {
     if (appId > 0) updateStreamRate(amount, timeUnit)
-
   }, [])
 
-
   useEffect(() => {
-    if (dmClient) {
+    if (dmClient && activeAddress) {
+      setSenderAddress(activeAddress)
+      fetchStreamData()
+      listBoxes()
       userBalanceFetch()
+      console.log('UseEffectRunning')
     }
-  }, [dmClient,activeAddress])
+  }, [dmClient, activeAddress])
 
   useEffect(() => {
     if (streamRate > 0 && amount > 0) {
@@ -357,14 +411,13 @@ const Home: React.FC<HomeProps> = () => {
       console.log('UseEffect3')
     } else {
       setApproxEndTime('')
-
     }
-  }, [streamRate, amount ,activeAddress])
+  }, [streamRate, amount, activeAddress])
 
   useEffect(() => {
     if (appId > 0 && dmClient) {
-      fetchIsStreaming(dmClient)
-      fetchContractGlobalStateData(dmClient)
+      // fetchIsStreaming(dmClient)
+      // fetchContractGlobalStateData(dmClient)
       calculateAnimationDuration()
     }
   }, [appId, activeAddress, dmClient])
@@ -401,9 +454,8 @@ const Home: React.FC<HomeProps> = () => {
           <ToastContainer position="top-right" autoClose={3000} />
         </div>
       </center>
-      {appId == 0 && (
-
-        <div className="flex flex-row justify-center mt-40">
+      {appId > 0 && (
+        <div className="flex flex-row justify-center mt-5">
           <div className=" px-[10px] flex flex-row items-center ">
             <div className="py-[1px] rounded-3xl text-gray-200">
               <button
@@ -413,7 +465,7 @@ const Home: React.FC<HomeProps> = () => {
                 className={`text-white mt-1 ml-3 border-[#170c31f5] from-[#1e0e44bd]  to-[#180b3698] hover:bg-gradient-to-bl font-medium rounded-xl text-[19px] px-5 py-2 text-center me-2 mb-2
                 ${navigationMod === 'DeployApp' ? 'bg-[#361352f5] border-[#2d1672dc] from-[#170c31f5] to-[#170c31f5] hover:bg-gradient-to-bl' : ''}`}
               >
-                DeployApp
+                CreateStream
               </button>
 
               <button
@@ -423,21 +475,14 @@ const Home: React.FC<HomeProps> = () => {
                 className={`text-white mt-1 ml-3 border-[#170c31f5] from-[#1e0e44bd]  to-[#180b3698] hover:bg-gradient-to-bl font-medium rounded-xl text-[19px] px-5 py-2 text-center me-2 mb-2
                 ${navigationMod === 'SearchApp' ? 'bg-[#361352f5] border-[#2d1672dc] from-[#170c31f5] to-[#170c31f5] hover:bg-gradient-to-bl' : ''}`}
               >
-                SearchApp
+                SearchStream
               </button>
-              {/* <a
-                href="/History"
-                className={`text-white mt-1 ml-3 border-[#170c31f5] from-[#1e0e44bd]  to-[#180b3698] hover:bg-gradient-to-bl font-medium rounded-xl text-[19px] px-5 py-2 text-center me-2 mb-2
-                ${navigationMod === 'AccHistory' ? 'bg-[#361352f5] border-[#2d1672dc] from-[#170c31f5] to-[#170c31f5] hover:bg-gradient-to-bl' : ''}`}
-              >
-                History
-              </a> */}
             </div>
           </div>
         </div>
       )}
 
-      {appId == 0 && navigationMod == 'DeployApp' && (
+      {/* {appId == 0 && navigationMod == 'DeployApp' && (
         <div className="text-center rounded-2xl mt-2 border-slate-800 border-solid border-[0.1px] p-4 max-w-md backdrop-blur-[5px] bg-[rgba(21,6,29,0.8)]  mx-auto">
           <label className="block text-[20px] font-medium text-gray-900 dark:text-white">Create New Stream Contract</label>
           {!activeAddress ? (
@@ -453,8 +498,8 @@ const Home: React.FC<HomeProps> = () => {
             </button>
           ) : null}
         </div>
-      )}
-      {appId == 0 && activeAddress && navigationMod == 'SearchApp' ? (
+      )} */}
+      {appId > 0 && activeAddress && navigationMod == 'SearchApp' ? (
         <div className="text-center rounded-2xl mt-3 border-solid border-2 border-slate-800 p-4 max-w-md backdrop-blur-[5px] bg-[rgba(21,6,29,0.8)]  mx-auto">
           <label className="block text-[19px] mb-4 font-medium text-gray-900 dark:text-white">Search for existing steram</label>
           <input
@@ -464,13 +509,15 @@ const Home: React.FC<HomeProps> = () => {
             onChange={handleAppIdChange}
           ></input>
         </div>
-      ): !activeAddress && navigationMod == 'SearchApp' ?(  <button
-        className="btn hero rounded-2xl bg-purple-700 hover:bg-purple-800 max-w-md  text-white text-[20px] px-11 mt-4 mx-auto"
-        onClick={toggleWalletModal}
-      >
-        Connect Wallet
-      </button>):null}
-      {activeAddress && appId > 0 && isStreaming === 1 && (
+      ) : !activeAddress && navigationMod == 'SearchApp' ? (
+        <button
+          className="btn hero rounded-2xl bg-purple-700 hover:bg-purple-800 max-w-md  text-white text-[20px] px-11 mt-4 mx-auto"
+          onClick={toggleWalletModal}
+        >
+          Connect Wallet
+        </button>
+      ) : null}
+      {activeAddress && appId > 0 && isStreaming === 128 && (
         <div className="text-center rounded-2xl mt-11 border-solid border-2 slate-800 p-4 max-w-md backdrop-blur-[5px] bg-[rgba(21,6,29,0.8)]  mx-auto">
           <label className="block text-[19px] mb-2 font-medium text-gray-900 dark:text-white">Application ID</label>
           <input
@@ -482,7 +529,7 @@ const Home: React.FC<HomeProps> = () => {
         </div>
       )}
 
-      {activeAddress && appId > 0 && isStreaming === 1 && (
+      {activeAddress && appId > 0 && isStreaming === 128 && (
         <div className="mt-20 ml-[740px]">
           <div className="mb-11 flex">
             <h2 className="text-[22px] font-medium text-gray-900 dark:text-white mr-8">Flow Started</h2>
@@ -494,43 +541,51 @@ const Home: React.FC<HomeProps> = () => {
         </div>
       )}
 
-      {activeAddress && appId > 0 && isStreaming === 0 && internalTxns.length > 0 &&(
+      {activeAddress && appId > 0 && isStreaming === 0 && internalTxns.length > 0 && (
         <center>
-      <div className="backdrop-blur-[5px] bg-[rgba(21,6,29,0.8)] mt-8 w-[900px] p-2 rounded-2xl mb-5  border-solid border-2">
-        <h3 className='block mb-2 text-lg text-center font-medium text-gray-900 dark:text-white'>Recent Stream Distributed Amounts</h3>
-          {internalTxns.length > 0 ? (
-           <ul>
-            <ul className='flex mb-2 text-lg font-normal text-gray-900 dark:text-white'>
-            <li >Receiver</li>
-              <li className='ml-auto'>Amount</li>
-            </ul>
-            {internalTxns.map((txn, index) => (
-             <li className='flex  mb-2 text-base font-normal text-gray-900 dark:text-white' key={index}>
-                {txn.receiver} <p className='ml-auto '>{txn.amount}</p>
-          </li>
-
-             ))}
-           </ul>
-           ) : (
-         <p>No internal transactions found.</p>
-         )}
-       </div>
-       </center>
+          <div className="backdrop-blur-[5px] bg-[rgba(21,6,29,0.8)] mt-8 w-[900px] p-2 rounded-2xl mb-5  border-solid border-2">
+            <h3 className="block mb-2 text-lg text-center font-medium text-gray-900 dark:text-white">Recent Stream Distributed Amounts</h3>
+            {internalTxns.length > 0 ? (
+              <ul>
+                <ul className="flex mb-2 text-lg font-normal text-gray-900 dark:text-white">
+                  <li>Receiver</li>
+                  <li className="ml-auto">Amount</li>
+                </ul>
+                {internalTxns.map((txn, index) => (
+                  <li className="flex  mb-2 text-base font-normal text-gray-900 dark:text-white" key={index}>
+                    {txn.receiver} <p className="ml-auto ">{txn.amount}</p>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>No internal transactions found.</p>
+            )}
+          </div>
+        </center>
       )}
 
-      {activeAddress && appId > 0 && isStreaming === 0 && (
-
-        <div className="text-center  rounded-2xl mt-11  p-6 max-w-md backdrop-blur-[5px] bg-[rgba(21,6,29,0.8)]  mx-auto">
+      {activeAddress && appId > 0 && isStreaming === 0 && navigationMod == 'DeployApp' && (
+        <div className="text-center  rounded-2xl mt-5  p-6 max-w-md backdrop-blur-[5px] bg-[rgba(21,6,29,0.8)]  mx-auto">
           <div className="max-w-md">
             <div className="grid ">
               <div>
-                <h1 className="block mb-2  text-2xl font-medium text-gray-900 dark:text-white">Application ID {appId}</h1>
+                <h1 className="block mb-2 text-xl font-medium text-gray-900 dark:text-white">StreamID {streamId.toString()}</h1>
                 {/* <h2 className="block mb-2 mt-4  text-2xl font-medium text-gray-900 dark:text-white">Create Payment Stream</h2> */}
                 <div className="mt-4">
-                  <label className="block mr-80 text-lg font-medium text-gray-900 dark:text-white">Address</label>
+                  <label className="block mr-72 text-lg font-medium text-gray-900 dark:text-white">Your Address</label>
                   <input
                     type="text"
-                    placeholder="Recipient Address"
+                    placeholder="Your Address"
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-lg rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    value={sender}
+                    onChange={(e) => e.target.value}
+                  />
+                </div>
+                <div className="mt-4">
+                  <label className="block mr-60 text-lg font-medium text-gray-900 dark:text-white">Recipient Address</label>
+                  <input
+                    type="text"
+                    placeholder="Enter Recipient Address"
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-lg rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     value={recipient}
                     onChange={(e) => setRecipient(e.target.value)}
@@ -620,12 +675,12 @@ const Home: React.FC<HomeProps> = () => {
                     >
                       {loding ? <span className="loading loading-spinner" /> : 'CreateStream'}
                     </button>
-                    <button
+                    {/* <button
                       className="btn  ml-9 text-lg mt-4 rounded-2xl bg-purple-700 hover:bg-purple-800 text-white"
                       onClick={funcdeleteStream}
                     >
                       DeleteAgreement
-                    </button>
+                     </button> */}
                   </div>
                 )}
               </div>
@@ -633,7 +688,7 @@ const Home: React.FC<HomeProps> = () => {
           </div>
         </div>
       )}
-      {activeAddress && appId > 0 && isStreaming === 1 && (
+      {activeAddress && appId > 0 && isStreaming === 128 && (
         <div className="hero antialiased mt-16 text-[21px]">
           <div className="backdrop-blur-[5px] bg-[rgba(44,33,59,0.48)]  p-4 rounded-2xl mb-5 border-white border-solid border-2">
             <table className="border-3  text-gray-500 dark:text-gray-400">
@@ -674,7 +729,7 @@ const Home: React.FC<HomeProps> = () => {
             </table>
             <div className="mt-2">
               <center>
-                <button
+                {/* <button
                   className="btn rounded-2xl  font-medium text-[22px] mr-6 mt-4 bg-purple-700 hover:bg-purple-800 text-white"
                   onClick={funcStopStream}
                 >
@@ -685,7 +740,7 @@ const Home: React.FC<HomeProps> = () => {
                   onClick={funcdeleteStream}
                 >
                   DeleteAgreement
-                </button>
+                {/* </button> */}
               </center>
             </div>
           </div>

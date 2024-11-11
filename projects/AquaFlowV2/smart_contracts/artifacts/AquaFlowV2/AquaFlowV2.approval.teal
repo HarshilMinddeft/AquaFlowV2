@@ -15,7 +15,7 @@ __puya_arc4_router__:
     proto 0 1
     txn NumAppArgs
     bz __puya_arc4_router___bare_routing@11
-    method "startStream(account,account,uint64,uint64)void"
+    method "startStream(account,account,uint64,uint64)uint64"
     method "startWithExistingId(uint64,account,account,uint64,uint64)void"
     method "withdraw(uint64)void"
     method "getStreamData(uint64)(uint64,uint64,uint64,uint64,address,address,uint64,bool,uint64)"
@@ -44,6 +44,11 @@ __puya_arc4_router___startStream_route@2:
     txna ApplicationArgs 4
     btoi
     callsub startStream
+    itob
+    byte 0x151f7c75
+    swap
+    concat
+    log
     int 1
     retsub
 
@@ -151,9 +156,9 @@ __puya_arc4_router___after_if_else@15:
     retsub
 
 
-// smart_contracts.AquaFlowV2.contract.AquaFlowV2.startStream(streamCreator: bytes, recipient: bytes, rate: uint64, amount: uint64) -> void:
+// smart_contracts.AquaFlowV2.contract.AquaFlowV2.startStream(streamCreator: bytes, recipient: bytes, rate: uint64, amount: uint64) -> uint64:
 startStream:
-    proto 4 0
+    proto 4 1
     txn Sender
     frame_dig -4
     ==
@@ -208,7 +213,7 @@ startStream:
     concat
     byte 0x0000000000000000
     concat
-    swap
+    dig 1
     itob
     swap
     box_put
@@ -239,8 +244,7 @@ startWithExistingId:
     setbit
     int 0
     getbit
-    int 1
-    ==
+    !
     assert // Stream is Active
     frame_dig -1
     frame_dig -2

@@ -26,7 +26,7 @@ class AquaFlowV2(ARC4Contract):
     @arc4.abimethod(allow_actions=["NoOp"])
     def startStream(
         self, streamCreator: Account, recipient: Account, rate: UInt64, amount: UInt64
-    ) -> None:
+    ) -> UInt64:
         assert Txn.sender == streamCreator, "Only creator can start a stream"
         assert rate > UInt64(0), "Stream rate must be greater than 0"
         assert amount > UInt64(0), "Stream amount must be greater than 0"
@@ -51,6 +51,7 @@ class AquaFlowV2(ARC4Contract):
             isStreaming=arc4.Bool(True),
             last_withdrawal_time=arc4.UInt64(0),
         )
+        return newStreamId
 
     @arc4.abimethod(allow_actions=["NoOp"])
     def startWithExistingId(
@@ -64,7 +65,7 @@ class AquaFlowV2(ARC4Contract):
         assert Txn.sender == streamCreator, "Only creator can start a stream"
         assert rate > UInt64(0), "Stream rate must be greater than 0"
         assert amount > UInt64(0), "Stream amount must be greater than 0"
-        assert self.streams[streamId].isStreaming == True, "Stream is Active"
+        assert self.streams[streamId].isStreaming == False, "Stream is Active"
 
         # Calculate the stream end time: total time to stream all the amount = amount / rate
         stream_duration = amount // rate
