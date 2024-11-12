@@ -100,6 +100,7 @@ export function startStream(
       })
       // console.log('Payment transaction ID:', paymentTxn.txIds)
       // console.log('Payment transaction sent:', paymentTxn.returns)
+      return newStreamId as any
     } catch (error) {
       console.error('Failed to start stream:', error)
     }
@@ -143,7 +144,7 @@ export function withdraw(
   AquaFlowAbiClient: AquaFlowV2Client,
   sender: string,
   appId: number,
-  streamId: number,
+  streamId: bigint,
 ) {
   return async () => {
     try {
@@ -151,7 +152,7 @@ export function withdraw(
       console.log('App ID:', appAddress)
 
       // Prompt user for a fee
-      const userFee = parseFloat('0.02')
+      const userFee = parseFloat('0.002')
 
       // Validate user fee input
       if (isNaN(userFee) || userFee <= 0) {
@@ -165,6 +166,7 @@ export function withdraw(
         {
           sendParams: {
             fee: algokit.algos(userFee),
+            populateAppCallResources: true,
           },
         },
       )
@@ -188,7 +190,7 @@ export function stopStream(
   sender: string,
   appId: number,
   recipient: string,
-  streamId: number,
+  streamId: bigint,
 ) {
   return async () => {
     try {
@@ -196,7 +198,7 @@ export function stopStream(
       const appAddress = getApplicationAddress(appId)
       const stopStreamM = await AquaFlowAbiClient.stopStream(
         { streamId },
-        { sendParams: { fee: algokit.algos(0.02), populateAppCallResources: true } },
+        { sendParams: { fee: algokit.algos(0.002), populateAppCallResources: true } },
       )
 
       // Check if there are inner transactions
@@ -256,12 +258,12 @@ export function deleteStream(
   AquaFlowAbiClient: AquaFlowV2Client,
   sender: string,
   appId: number,
-  streamId: number,
+  streamId: bigint,
 ) {
   return async () => {
     const deleteAapp = await AquaFlowAbiClient.deleteStream(
       { streamId },
-      { sendParams: { fee: algokit.algos(0.03), populateAppCallResources: true } },
+      { sendParams: { fee: algokit.algos(0.003), populateAppCallResources: true } },
     )
     console.log('DeleteappConformations', deleteAapp.confirmations)
     return deleteAapp.confirmations

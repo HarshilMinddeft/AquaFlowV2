@@ -7,8 +7,9 @@ import { SnackbarProvider } from 'notistack'
 import { Route, Routes } from 'react-router-dom'
 // import AccountHistory from './AccountHistory'
 import Home from './Home'
+import SearchStream from './SearchStream'
 import { getAlgodConfigFromViteEnvironment, getKmdConfigFromViteEnvironment } from './utils/network/getAlgoClientConfigs'
-// import Withdraw from './Withdraw'
+import Withdraw from './Withdraw'
 
 let providersArray: ProvidersArray
 if (import.meta.env.VITE_ALGOD_NETWORK === '') {
@@ -55,8 +56,9 @@ export default function App() {
       <WalletProvider value={walletProviders}>
         <Routes>
           <Route path="/" element={<Home />} />
-          {/* <Route path="/Withdraw" element={<Withdraw />} /> */}
+          <Route path="/Withdraw" element={<Withdraw />} />
           {/* <Route path="/History" element={<AccountHistory />} /> */}
+          <Route path="/SearchStream" element={<SearchStream />} />
         </Routes>
       </WalletProvider>
     </SnackbarProvider>
