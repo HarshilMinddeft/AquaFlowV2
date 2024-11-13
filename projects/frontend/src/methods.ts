@@ -198,7 +198,7 @@ export function stopStream(
       const appAddress = getApplicationAddress(appId)
       const stopStreamM = await AquaFlowAbiClient.stopStream(
         { streamId },
-        { sendParams: { fee: algokit.algos(0.002), populateAppCallResources: true } },
+        { sendParams: { fee: algokit.algos(0.004), populateAppCallResources: true } },
       )
 
       // Check if there are inner transactions
@@ -261,12 +261,50 @@ export function deleteStream(
   streamId: bigint,
 ) {
   return async () => {
-    const deleteAapp = await AquaFlowAbiClient.deleteStream(
-      { streamId },
-      { sendParams: { fee: algokit.algos(0.003), populateAppCallResources: true } },
-    )
-    console.log('DeleteappConformations', deleteAapp.confirmations)
-    return deleteAapp.confirmations
+    try {
+      const internalTransactions: Array<{ amount: number; receiver: string }> = []
+      const deleteAapp = await AquaFlowAbiClient.deleteStream(
+        { streamId },
+        { sendParams: { fee: algokit.algos(0.003), populateAppCallResources: true } },
+      )
+      console.log('DeleteappConformations', deleteAapp.confirmations)
+      // Check if there are inner transactions
+      if (deleteAapp.confirmations && deleteAapp.confirmations.length > 0) {
+        const confirmation = deleteAapp.confirmations[0]
+
+        // Check if inner transactions exist
+        if (confirmation.innerTxns && confirmation.innerTxns.length > 0) {
+          console.log(`Found ${confirmation.innerTxns.length} internal transactions:`)
+
+          // Loop through each internal transaction and log its details
+          confirmation.innerTxns.forEach((innerTxn, index) => {
+            console.log(`Internal Transaction ${index + 1}:`)
+            const txnDetails = innerTxn.txn
+            const amount = Number(txnDetails.txn.amt) / 1000000
+            const receiver = algosdk.encodeAddress(txnDetails.txn.rcv as any)
+
+            internalTransactions.push({
+              amount,
+              receiver,
+            })
+
+            console.log('Amount:', Number(txnDetails.txn.amt) / 1000000)
+            console.log('Sender:', algosdk.encodeAddress(txnDetails.txn.snd))
+            // console.log('ReceiverEncodeLease:', algokit.encodeLease(txnDetails.txn.rcv))
+            console.log('First valid round:', txnDetails.txn.fv)
+            console.log('Last valid round:', txnDetails.txn.lv)
+          })
+        } else {
+          console.log('No internal transactions found.')
+        }
+      } else {
+        console.log('No confirmations found.')
+      }
+      return internalTransactions
+      // return deleteAapp.confirmations
+    } catch (error) {
+      throw error
+    }
   }
 }
 

@@ -203,45 +203,6 @@ const Withdraw: React.FC<WithdrawProps> = () => {
     }
   }
 
-  //FIF
-  // const fetchContractGlobalStateData = async (steamAbiClient: SteamClient) => {
-  //   if (activeAddress) {
-  //     const streamData = await steamAbiClient.getGlobalState()
-  //     const isStreaming = streamData.isStreaming?.asNumber() ?? 0
-  //     const TotalContractbalance = streamData.balance?.asNumber() ?? 0
-  //     const streamfinishTime = streamData.endTime?.asNumber() ?? 0
-  //     const streamstartTime = streamData.startTime?.asNumber() ?? 0
-  //     const streamalgoFlowRate = streamData.streamRate?.asNumber() ?? 0
-  //     const TotalwithdrawAmount = streamData.withdrawnAmount?.asNumber() ?? 0
-  //     setepochStreamfinishTime(streamfinishTime)
-  //     setepochStreamStartTime(streamstartTime)
-  //     //
-  //     const recipientBytes = streamData.recipient?.asByteArray()
-  //     if (recipientBytes) {
-  //       const userAddress = algosdk.encodeAddress(new Uint8Array(recipientBytes))
-  //       setReciverAddress(userAddress)
-  //     } else {
-  //       console.log('Recipient address not found or is invalid.')
-  //       toast.error('Recipient address not found or is invalid')
-  //     }
-
-  //     // Convert in Algos
-  //     const convTotalwithdrawAmount = TotalwithdrawAmount / 1000000
-  //     const convstreamalgoFlowRate = streamalgoFlowRate / 1000000
-  //     const convTotalContractbalance = TotalContractbalance / 1000000
-
-  //     // Convert Unix timestamps to human-readable dates
-  //     const formattedStreamStartTime = streamstartTime ? dayjs.unix(streamstartTime).format('MM/DD/YYYY, h:mm:ss A') : 'N/A'
-  //     const formattedStreamFinishTime = streamfinishTime ? dayjs.unix(streamfinishTime).format('MM/DD/YYYY, h:mm:ss A') : 'N/A'
-
-  //     setIsStreaming(isStreaming)
-  //     setStreamContractBalance(convTotalContractbalance)
-  //     setStreamStartTime(formattedStreamStartTime)
-  //     setStreamFinishTime(formattedStreamFinishTime)
-  //     setStreamFlowRate(convstreamalgoFlowRate)
-  //     setTotalUserWithdraw(convTotalwithdrawAmount)
-  //   }
-  // }
   //FIF frontend internal function
   const userBalanceFetch = async () => {
     const accountInfo = await algorand.client.algod.accountInformation(activeAddress!).do()
@@ -249,17 +210,21 @@ const Withdraw: React.FC<WithdrawProps> = () => {
     setUserAccountBalance(userBalance / 1e6)
   }
   useEffect(() => {
-    if (dmClient) {
+    if (activeAddress && dmClient && streamId == 0n) {
       userBalanceFetch()
       console.log('1qwertyuiop')
       fetchStreamBoxData()
-      if (appId > 0) {
-        fetchStreamBoxData()
-      }
     }
-  }, [dmClient, appId, activeAddress])
+  }, [activeAddress, streamId, dmClient])
 
-  // Effect hook to continuously check the stream status
+  useEffect(() => {
+    if (streamId) {
+      fetchStreamBoxData()
+      userBalanceFetch()
+      console.log('UseEffect 5')
+    }
+  }, [streamId, totalUserWithdraw])
+
   useEffect(() => {
     if (Date.now() / 1000 < epochStreamfinishTime) {
       const interval = setInterval(() => {
@@ -311,9 +276,9 @@ const Withdraw: React.FC<WithdrawProps> = () => {
         </div>
       </div>
       {activeAddress && appId > 0 && isStreaming === 128 && (
-        <div className="mt-20 ml-[740px]">
+        <div className="mt-20 mx-auto max-w-xl">
           <div className="mb-11 flex">
-            <h2 className="text-[22px] font-medium text-gray-900 dark:text-white mr-8">Flow Started</h2>
+            <h2 className="text-[22px] font-medium text-gray-900 dark:text-white mr-8">FlowStarted</h2>
             <BlinkBlurB></BlinkBlurB>
             <div className="text-white ml-10 text-[22px] font-semibold ">
               <AnimatedCounter from={finalDisplayAmount} to={streamContractBalance} duration={animationDuration / 1000} />

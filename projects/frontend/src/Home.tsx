@@ -116,16 +116,6 @@ const Home: React.FC<HomeProps> = () => {
       setStreamFlowRate(convstreamalgoFlowRate)
       setTotalUserWithdraw(convTotalwithdrawAmount)
       setReciverAddress(recipient)
-
-      console.log('Rate', rate)
-      console.log('startTime', startTime)
-      console.log('endTime', endTime)
-      console.log('withdrawnAmount', withdrawnAmount)
-      console.log('recipient', recipient)
-      console.log('streamCreator', streamCreator)
-      console.log('balance', balance)
-      console.log('isStreaming', isStreaming)
-      console.log('last_withdrawal_time', last_withdrawal_time)
     } catch (error) {
       console.error('Error fetching box data:', error)
       throw error
@@ -160,7 +150,7 @@ const Home: React.FC<HomeProps> = () => {
     } catch (error) {
       if (error instanceof Error) {
         setLoding(false)
-        if (error.message.includes('CreatorAddress; ==; assert')) {
+        if (error.message.includes('Sender; ==; assert')) {
           console.error('Caught a URLTokenBaseHTTPError:', error.message)
           toast.error('You are not owner of this stream')
         } else {
@@ -176,15 +166,22 @@ const Home: React.FC<HomeProps> = () => {
     try {
       const deleteConfirmation = await deleteStream(algorand, dmClient, activeAddress!, appId, streamId)()
       if (deleteConfirmation) {
+        setInternalTxns(deleteConfirmation)
         console.log('Contract deletion confirmed:', deleteConfirmation)
-        await fetchStreamBoxData()
-        toast.success('Contract Deleted')
-        setAppId(0)
+        setStreamId(0n)
+        setStreamRate(0n)
+        setIsStreaming(0)
+        setStreamContractBalance(0)
+        setepochStreamStartTime(0)
+        setepochStreamfinishTime(0)
+        setTotalUserWithdraw(0)
+        console.log('Detailes', streamId, streamRate, isStreaming, streamContractBalance, totalUserWithdraw)
+        toast.success('Stream Deleted')
       } else {
-        toast.error('You are not owner of this stream')
+        console.log('Error In deleting stream')
       }
     } catch (error) {
-      console.error('Error deleting contract:', error)
+      console.error('Error deleting Stream:', error)
       toast.error('Error deleting contract or Invalid User')
     }
   }
@@ -211,9 +208,8 @@ const Home: React.FC<HomeProps> = () => {
       toast.info('Confirm payment')
       setLoding(true)
       const streamStarted = await startStream(algorand, dmClient, activeAddress!, sender, streamRate, recipient, amount, appId)()
-      console.log('streamStarted', streamStarted)
       setStreamId(streamStarted ?? 0n)
-      console.log('streamStarted', streamStarted)
+      console.log('streamStarted ID', streamStarted)
       setLoding(false)
       await fetchStreamBoxData()
       // setIsStreaming(0) // Only set streaming state if startStream is successful
@@ -229,16 +225,6 @@ const Home: React.FC<HomeProps> = () => {
       }
     }
   }
-
-  //FIF
-  // const fetchIsStreaming = async (steamAbiClient: AquaFlowV2Client) => {
-  //   if (activeAddress && appId > 0) {
-  //     const streamData = await steamAbiClient.getGlobalState()
-  //     const isStreaming = streamData.isStreaming?.asNumber() ?? 0
-  //     setIsStreaming(isStreaming)
-  //   }
-  // }
-  //FIF
 
   //FIF
   const calculateStreamEndTime = () => {
@@ -276,6 +262,7 @@ const Home: React.FC<HomeProps> = () => {
       setAnimationDuration(totalDuration)
     }
   }
+
   //FIF
   const userBalanceFetch = async () => {
     const accountInfo = await algorand.client.algod.accountInformation(activeAddress!).do()
@@ -320,37 +307,41 @@ const Home: React.FC<HomeProps> = () => {
 
   useEffect(() => {
     if (appId > 0) updateStreamRate(amount, timeUnit)
+    console.log('UseEffect 1')
   }, [])
 
   useEffect(() => {
-    if (dmClient && activeAddress) {
+    if (activeAddress && dmClient && streamId == 0n) {
       setSenderAddress(activeAddress)
-      console.log('StreamId', streamId)
-      listBoxes()
+      console.log('StreamId=>', streamId)
+      fetchStreamBoxData()
       userBalanceFetch()
-      console.log('UseEffectRunning876545678')
+      console.log('UseEffect 2')
     }
-  }, [dmClient, activeAddress])
+  }, [activeAddress, streamId, dmClient])
+
+  useEffect(() => {
+    if (streamId) {
+      fetchStreamBoxData()
+      userBalanceFetch()
+      console.log('UseEffect 5')
+    }
+  }, [streamId])
 
   useEffect(() => {
     if (streamRate > 0 && amount > 0) {
       calculateStreamEndTime()
-      console.log('UseEffe23424234ct3 running constant')
+      console.log('UseEffect 3')
     } else {
       setApproxEndTime('')
     }
   }, [streamRate, amount, activeAddress])
 
   useEffect(() => {
-    fetchStreamBoxData()
-    console.log('UseEffectRunning3rdone Constant')
-  }, [appId, activeAddress, dmClient])
-
-  useEffect(() => {
     if (Date.now() / 1000 < epochStreamfinishTime) {
       const interval = setInterval(() => {
         calculateAnimationDuration()
-        console.log('ConstentUseEffect')
+        console.log('UseEffect 4')
       }, 1000)
       return () => clearInterval(interval)
     }
@@ -405,25 +396,6 @@ const Home: React.FC<HomeProps> = () => {
           </div>
         </div>
       )}
-
-      {/* {appId > 0 && activeAddress && navigationMod == 'SearchApp' ? (
-        <div className="text-center rounded-2xl mt-3 border-solid border-2 border-slate-800 p-4 max-w-md backdrop-blur-[5px] bg-[rgba(21,6,29,0.8)]  mx-auto">
-          <label className="block text-[19px] mb-4 font-medium text-gray-900 dark:text-white">Search for existing steram</label>
-          <input
-            type="number"
-            placeholder="Enter AppId"
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-[18px]  rounded-lg focus:ring-blue-500  focus:border-blue-500 block w-full p-3 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            onChange={handleAppIdChange}
-          ></input>
-        </div>
-      ) : !activeAddress && navigationMod == 'SearchApp' ? (
-        <button
-          className="btn hero rounded-2xl bg-purple-700 hover:bg-purple-800 max-w-md  text-white text-[20px] px-11 mt-4 mx-auto"
-          onClick={toggleWalletModal}
-        >
-          Connect Wallet
-        </button>
-      ) : null} */}
       {activeAddress && appId > 0 && isStreaming === 128 && (
         <div className="text-center rounded-2xl mt-11 border-solid border-2 slate-800 p-4 max-w-md backdrop-blur-[5px] bg-[rgba(21,6,29,0.8)]  mx-auto">
           <label className="block text-[19px] mb-2 font-medium text-gray-900 dark:text-white">Stream ID</label>
@@ -436,8 +408,8 @@ const Home: React.FC<HomeProps> = () => {
         </div>
       )}
 
-      {activeAddress && appId > 0 && isStreaming === 128 && (
-        <div className="mt-20 ml-[710px]">
+      {/* {activeAddress && appId > 0 && isStreaming === 128 && (
+        <div className="mt-20 ml-[640px]">
           <div className="mb-11 flex">
             <h2 className="text-[22px] font-medium text-gray-900 dark:text-white mr-8">Flow Started</h2>
             <BlinkBlurB></BlinkBlurB>
@@ -446,9 +418,19 @@ const Home: React.FC<HomeProps> = () => {
             </div>
           </div>
         </div>
+      )} */}
+      {activeAddress && appId > 0 && isStreaming === 128 && (
+        <div className="mt-20 mx-auto max-w-xl">
+          <div className="mb-11 flex ">
+            <h2 className="text-[22px] font-medium text-gray-900 dark:text-white mx-8">FlowStarted</h2>
+            <BlinkBlurB></BlinkBlurB>
+            <div className="text-white ml-10 text-[22px] font-semibold">
+              <AnimatedCounter from={displayFlowAmount} to={0} duration={animationDuration / 1000} />
+            </div>
+          </div>
+        </div>
       )}
-
-      {activeAddress && appId > 0 && isStreaming === 0 && internalTxns.length > 0 && (
+      {activeAddress && isStreaming === 0 && internalTxns.length > 0 && (
         <center>
           <div className="backdrop-blur-[5px] bg-[rgba(21,6,29,0.8)] mt-8 w-[900px] p-2 rounded-2xl mb-5  border-solid border-2">
             <h3 className="block mb-2 text-lg text-center font-medium text-gray-900 dark:text-white">Recent Stream Distributed Amounts</h3>

@@ -152,9 +152,9 @@ const SearchStream: React.FC<SearchStreamProps> = () => {
     } catch (error) {
       if (error instanceof Error) {
         setLoding(false)
-        if (error.message.includes('CreatorAddress; ==; assert')) {
+        if (error.message.includes('Sender; ==; assert')) {
           console.error('Caught a URLTokenBaseHTTPError:', error.message)
-          toast.error('You are not owner of this stream')
+          toast.error('You are not creator of this stream')
         } else {
           console.error('An error occurred:', error.message)
         }
@@ -168,11 +168,15 @@ const SearchStream: React.FC<SearchStreamProps> = () => {
     try {
       const deleteConfirmation = await deleteStream(algorand, dmClient, activeAddress!, appId, streamId)()
       if (deleteConfirmation) {
+        setInternalTxns(deleteConfirmation)
         console.log('Contract deletion confirmed:', deleteConfirmation)
-        // await fetchContractGlobalStateData(dmClient)
-        toast.success('Contract Deleted')
         setStreamId(0n)
+        setStreamRate(0n)
         setIsStreaming(0)
+        setStreamContractBalance(0)
+        setepochStreamStartTime(0)
+        setepochStreamfinishTime(0)
+        setTotalUserWithdraw(0)
       } else {
         toast.error('You are not owner of this stream')
       }
@@ -266,40 +270,43 @@ const SearchStream: React.FC<SearchStreamProps> = () => {
 
   useEffect(() => {
     if (appId > 0) updateStreamRate(amount, timeUnit)
+    console.log('UF==>1')
   }, [])
 
+  // UseEffect will run will till user stream is created and it gets BoxId
   useEffect(() => {
-    if (dmClient && activeAddress) {
+    if (dmClient && activeAddress && streamId == 0n) {
       setSenderAddress(activeAddress)
-      // fetchStreamBoxData()
+      fetchStreamBoxData()
       console.log('StreamId', streamId)
-      listBoxes()
       userBalanceFetch()
-      console.log('UseEffectRunning876545678')
+      console.log('UF==>2')
     }
-  }, [dmClient, activeAddress])
+  }, [dmClient, activeAddress, streamId])
+
+  // UseEffect will run once after stream is created for fetching boxdata
+  useEffect(() => {
+    if (streamId) {
+      fetchStreamBoxData()
+      userBalanceFetch()
+      console.log('UseEffect 5')
+    }
+  }, [streamId])
 
   useEffect(() => {
     if (streamRate > 0 && amount > 0) {
       calculateStreamEndTime()
-      console.log('UseEffe23424234ct3')
+      console.log('UF==>3')
     } else {
       setApproxEndTime('')
     }
   }, [streamRate, amount, activeAddress])
 
   useEffect(() => {
-    if (appId > 0 && dmClient) {
-      fetchStreamBoxData()
-      console.log('UseEffectRunning3rdone')
-    }
-  }, [appId, activeAddress, dmClient])
-
-  useEffect(() => {
     if (Date.now() / 1000 < epochStreamfinishTime) {
       const interval = setInterval(() => {
         calculateAnimationDuration()
-        console.log('ConstentUseEffect')
+        console.log('UF==>5')
       }, 1000)
       return () => clearInterval(interval)
     }
@@ -375,9 +382,9 @@ const SearchStream: React.FC<SearchStreamProps> = () => {
       ) : null}
 
       {activeAddress && appId > 0 && isStreaming === 128 && (
-        <div className="mt-16 ml-[710px]">
+        <div className="mt-16 mx-auto max-w-xl">
           <div className="mb-11 flex">
-            <h2 className="text-[22px] font-medium text-gray-900 dark:text-white mr-8">Flow Started</h2>
+            <h2 className="text-[22px] font-medium text-gray-900 dark:text-white mr-8">FlowStarted</h2>
             <BlinkBlurB></BlinkBlurB>
             <div className="text-white  ml-10 text-[22px] font-semibold">
               <AnimatedCounter from={displayFlowAmount} to={0} duration={animationDuration / 1000} />
@@ -386,7 +393,7 @@ const SearchStream: React.FC<SearchStreamProps> = () => {
         </div>
       )}
 
-      {activeAddress && appId > 0 && isStreaming === 0 && internalTxns.length > 0 && (
+      {activeAddress && isStreaming === 0 && internalTxns.length > 0 && (
         <center>
           <div className="backdrop-blur-[5px] bg-[rgba(21,6,29,0.8)] mt-8 w-[900px] p-2 rounded-2xl mb-5  border-solid border-2">
             <h3 className="block mb-2 text-lg text-center font-medium text-gray-900 dark:text-white">Recent Stream Distributed Amounts</h3>
