@@ -116,15 +116,16 @@ export function startStreamWithExistId(
   recipient: string,
   amount: bigint,
   appId: number,
-  streamId: number,
+  streamId: bigint,
 ) {
   return async () => {
     try {
       const streamRateInMicroAlgos = convertToMicroAlgos(streamRate)
       const appAddress = getApplicationAddress(appId)
       const algoAmount = algokit.microAlgos(Number(amount))
+      console.log('Datas', streamId, streamCreator, recipient, streamRateInMicroAlgos, amount)
       const startExistIdStream = await AquaFlowAbiClient.startWithExistingId(
-        { streamId, streamCreator, recipient, rate: streamRateInMicroAlgos, amount },
+        { streamId, recipient, rate: streamRateInMicroAlgos, amount },
         { sendParams: { populateAppCallResources: true } },
       )
 
@@ -133,8 +134,10 @@ export function startStreamWithExistId(
         receiver: appAddress, // The smart contract's app address
         amount: algoAmount, // Amount to transfer to the contract
       })
+      return startExistIdStream.confirmation
     } catch (error) {
       console.error('Failed to start stream:', error)
+      return error
     }
   }
 }

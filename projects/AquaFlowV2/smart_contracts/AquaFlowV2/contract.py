@@ -57,12 +57,13 @@ class AquaFlowV2(ARC4Contract):
     def startWithExistingId(
         self,
         streamId: UInt64,
-        streamCreator: Account,
         recipient: Account,
         rate: UInt64,
         amount: UInt64,
     ) -> None:
-        assert Txn.sender == streamCreator, "Only creator can start a stream"
+        assert (
+            Txn.sender == self.streams[streamId].streamCreator
+        ), "Only creator can start a stream"
         assert rate > UInt64(0), "Stream rate must be greater than 0"
         assert amount > UInt64(0), "Stream amount must be greater than 0"
         assert self.streams[streamId].isStreaming == False, "Stream is Active"
@@ -78,7 +79,7 @@ class AquaFlowV2(ARC4Contract):
             endTime=arc4.UInt64(end_time),
             withdrawnAmount=arc4.UInt64(0),
             recipient=arc4.Address(recipient),
-            streamCreator=arc4.Address(streamCreator),
+            streamCreator=arc4.Address(self.streams[streamId].streamCreator.native),
             balance=arc4.UInt64(amount),
             isStreaming=arc4.Bool(True),
             last_withdrawal_time=arc4.UInt64(0),
@@ -204,7 +205,7 @@ class AquaFlowV2(ARC4Contract):
         # Reset the stream parameters
         updated_stream = StreamData(
             streamRate=arc4.UInt64(0),
-            streamCreator=arc4.Address(Account()),
+            streamCreator=arc4.Address(stream.streamCreator.native),
             startTime=arc4.UInt64(0),
             endTime=arc4.UInt64(0),
             withdrawnAmount=arc4.UInt64(0),

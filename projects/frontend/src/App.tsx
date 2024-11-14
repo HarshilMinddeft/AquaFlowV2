@@ -7,6 +7,7 @@ import { SnackbarProvider } from 'notistack'
 import { Route, Routes } from 'react-router-dom'
 import AccountHistory from './AccountHistory'
 import Home from './Home'
+import RestartStream from './RestartStream'
 import SearchStream from './SearchStream'
 import { getAlgodConfigFromViteEnvironment, getKmdConfigFromViteEnvironment } from './utils/network/getAlgoClientConfigs'
 import Withdraw from './Withdraw'
@@ -59,6 +60,7 @@ export default function App() {
           <Route path="/Withdraw" element={<Withdraw />} />
           <Route path="/History" element={<AccountHistory />} />
           <Route path="/SearchStream" element={<SearchStream />} />
+          <Route path="/RestartStream" element={<RestartStream />} />
         </Routes>
       </WalletProvider>
     </SnackbarProvider>

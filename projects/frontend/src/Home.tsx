@@ -20,7 +20,7 @@ interface HomeProps {}
 const Home: React.FC<HomeProps> = () => {
   const [openWalletModal, setOpenWalletModal] = useState<boolean>(false)
   const [openDemoModal, setOpenDemoModal] = useState<boolean>(false)
-  const [appId, setAppId] = useState<number>(728805691)
+  const [appId, setAppId] = useState<number>(729020888)
   const [streamId, setStreamId] = useState<bigint>(0n)
   const [inputAppId, setInputAppId] = useState<number | null>(null)
   const { activeAddress, signer } = useWallet()
@@ -464,6 +464,7 @@ const Home: React.FC<HomeProps> = () => {
                   <label className="block mr-72 text-lg font-medium text-gray-900 dark:text-white">Your Address</label>
                   <input
                     type="text"
+                    disabled={true}
                     placeholder="Your Address"
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-lg rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     value={sender}
@@ -602,7 +603,7 @@ const Home: React.FC<HomeProps> = () => {
                 </tr>
                 <tr className="flex border-solid border-b border-slate-200">
                   <th className="text-white font-medium mt-2">ActiveStream</th>
-                  <th className="text-white ml-auto mt-2 mr-2 ">{isStreaming} </th>
+                  <th className="text-white ml-auto mt-2 mr-2 ">{isStreaming === 128 ? 'Yes' : 'NO'} </th>
                 </tr>
               </tbody>
             </table>

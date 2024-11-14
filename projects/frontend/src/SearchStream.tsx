@@ -20,7 +20,7 @@ interface SearchStreamProps {}
 const SearchStream: React.FC<SearchStreamProps> = () => {
   const [openWalletModal, setOpenWalletModal] = useState<boolean>(false)
   const [openDemoModal, setOpenDemoModal] = useState<boolean>(false)
-  const [appId, setAppId] = useState<number>(728805691)
+  const [appId, setAppId] = useState<number>(729020888)
   const [streamId, setStreamId] = useState<bigint>(0n)
   const { activeAddress, signer } = useWallet()
   const [sender, setSenderAddress] = useState<string>('')
@@ -447,7 +447,7 @@ const SearchStream: React.FC<SearchStreamProps> = () => {
                 </tr>
                 <tr className="flex border-solid border-b border-slate-200">
                   <th className="text-white font-medium mt-2">ActiveStream</th>
-                  <th className="text-white ml-auto mt-2 mr-2 ">{isStreaming} </th>
+                  <th className="text-white ml-auto mt-2 mr-2 ">{isStreaming === 128 ? 'Yes' : 'NO'} </th>
                 </tr>
               </tbody>
             </table>

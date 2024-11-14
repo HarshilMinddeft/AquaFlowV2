@@ -18,7 +18,7 @@ interface WithdrawProps {}
 const Withdraw: React.FC<WithdrawProps> = () => {
   const [openWalletModal, setOpenWalletModal] = useState<boolean>(false)
   const [openDemoModal, setOpenDemoModal] = useState<boolean>(false)
-  const [appId, setAppId] = useState<number>(728805691)
+  const [appId, setAppId] = useState<number>(729020888)
   const { activeAddress, signer } = useWallet()
   const [isStreaming, setIsStreaming] = useState<number>(0)
   // const [currentwithdrawAmount, setCurrentwithdrawAmount] = useState<number>(0)
@@ -321,7 +321,7 @@ const Withdraw: React.FC<WithdrawProps> = () => {
                 </tr>
                 <tr className="flex border-solid border-b border-slate-200">
                   <th className="text-white font-medium mt-2">ActiveStream</th>
-                  <th className="text-green-300 ml-auto mt-1 mr-2 ">{isStreaming} </th>
+                  <th className="text-green-300 ml-auto mt-1 mr-2 ">{isStreaming === 128 ? 'Yes' : 'NO'} </th>
                 </tr>
               </tbody>
             </table>

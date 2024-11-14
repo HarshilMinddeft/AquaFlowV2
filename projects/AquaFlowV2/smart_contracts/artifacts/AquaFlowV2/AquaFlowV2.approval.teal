@@ -16,7 +16,7 @@ __puya_arc4_router__:
     txn NumAppArgs
     bz __puya_arc4_router___bare_routing@11
     method "startStream(account,account,uint64,uint64)uint64"
-    method "startWithExistingId(uint64,account,account,uint64,uint64)void"
+    method "startWithExistingId(uint64,account,uint64,uint64)void"
     method "withdraw(uint64)void"
     method "getStreamData(uint64)(uint64,uint64,uint64,uint64,address,address,uint64,bool,uint64)"
     method "stopStream(uint64)void"
@@ -65,10 +65,7 @@ __puya_arc4_router___startWithExistingId_route@3:
     txnas Accounts
     txna ApplicationArgs 3
     btoi
-    txnas Accounts
     txna ApplicationArgs 4
-    btoi
-    txna ApplicationArgs 5
     btoi
     callsub startWithExistingId
     int 1
@@ -220,19 +217,22 @@ startStream:
     retsub
 
 
-// smart_contracts.AquaFlowV2.contract.AquaFlowV2.startWithExistingId(streamId: uint64, streamCreator: bytes, recipient: bytes, rate: uint64, amount: uint64) -> void:
+// smart_contracts.AquaFlowV2.contract.AquaFlowV2.startWithExistingId(streamId: uint64, recipient: bytes, rate: uint64, amount: uint64) -> void:
 startWithExistingId:
-    proto 5 0
-    txn Sender
+    proto 4 0
     frame_dig -4
+    itob
+    dup
+    box_get
+    assert // check self.streams entry exists
+    extract 64 32 // on error: Index access is out of bounds
+    txn Sender
     ==
     assert // Only creator can start a stream
     frame_dig -2
     assert // Stream rate must be greater than 0
     frame_dig -1
     assert // Stream amount must be greater than 0
-    frame_dig -5
-    itob
     dup
     box_get
     assert // check self.streams entry exists
@@ -259,9 +259,14 @@ startWithExistingId:
     swap
     itob
     swap
+    dig 3
+    box_get
+    assert // check self.streams entry exists
+    extract 64 32 // on error: Index access is out of bounds
+    cover 3
     frame_dig -1
     itob
-    cover 3
+    cover 4
     uncover 2
     swap
     concat
@@ -271,7 +276,7 @@ startWithExistingId:
     concat
     frame_dig -3
     concat
-    frame_dig -4
+    swap
     concat
     swap
     concat
@@ -613,8 +618,17 @@ stopStream_after_if_else@3:
     itxn_submit
 
 stopStream_after_if_else@6:
+    byte base32 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
+    frame_dig 3
+    concat
+    byte 0x0000000000000000
+    concat
+    byte 0x00
+    concat
+    byte 0x0000000000000000
+    concat
     frame_dig 1
-    byte base32 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA===
+    swap
     box_put
     retsub
 
