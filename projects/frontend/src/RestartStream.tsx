@@ -3,7 +3,7 @@ import * as algokit from '@algorandfoundation/algokit-utils'
 import { useWallet } from '@txnlab/use-wallet'
 import dayjs from 'dayjs'
 import React, { useEffect, useState } from 'react'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import ConnectWallet from './components/ConnectWallet'
@@ -31,6 +31,7 @@ const RestartStream: React.FC<RestartStreamProps> = () => {
   const [timeUnit, setTimeUnit] = useState<string>('sec')
   const location = useLocation()
   const { streamId } = location.state || { streamId: 0n }
+  const navigate = useNavigate()
 
   const toggleWalletModal = () => {
     setOpenWalletModal(!openWalletModal)
@@ -84,6 +85,7 @@ const RestartStream: React.FC<RestartStreamProps> = () => {
       )()
       console.log('streamStarted ID', streamStarted)
       setLoding(false)
+      navigate('/SearchStream', { state: { streamId } })
       // setIsStreaming(0) // Only set streaming state if startStream is successful
     } catch (error) {
       if (error instanceof Error) {

@@ -1,5 +1,5 @@
 import * as algokit from '@algorandfoundation/algokit-utils'
-import algosdk from 'algosdk'
+import { default as algosdk } from 'algosdk'
 import { AquaFlowV2Client } from './contracts/AquaFlowV2'
 
 const validateAppId = async (appId: number) => {
@@ -78,6 +78,12 @@ export function startStream(
       // console.log('after Stream Rate:', streamRate)
       // console.log('After Amount:', algoAmount)
 
+      const paymentTxn = await algorand.send.payment({
+        sender, // Sender's address (wallet)
+        receiver: appAddress, // The smart contract's app address
+        amount: algoAmount, // Amount to transfer to the contract
+      })
+
       // Start the stream
       const startStreamResult = await AquaFlowAbiClient.startStream(
         {
@@ -93,11 +99,6 @@ export function startStream(
       const newStreamId = startStreamResult.return
       console.log('newStreamId', newStreamId)
 
-      const paymentTxn = await algorand.send.payment({
-        sender, // Sender's address (wallet)
-        receiver: appAddress, // The smart contract's app address
-        amount: algoAmount, // Amount to transfer to the contract
-      })
       // console.log('Payment transaction ID:', paymentTxn.txIds)
       // console.log('Payment transaction sent:', paymentTxn.returns)
       return newStreamId as any

@@ -53,9 +53,22 @@ const Withdraw: React.FC<WithdrawProps> = () => {
     algorand.client.algod,
   )
 
-  const handleAppIdChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const inputAppId = Number(event.target.value)
-    setStreamId(BigInt(inputAppId))
+  const handleStreamIdChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    try {
+      const inputAppId = Number(event.target.value)
+      setStreamId(BigInt(inputAppId))
+    } catch (error: any) {
+      if (error instanceof Error) {
+        if (error.message.includes('404')) {
+          // If a 404 error occurs (application not found), show an error message
+          toast.error('App ID does not exist. Please enter a valid App ID.')
+          console.error('App ID not found:', error.message)
+        } else {
+          console.error('An error occurred while fetching the app ID:', error.message)
+          toast.error('Failed to validate App ID. Please try again.')
+        }
+      }
+    }
   }
 
   const handleWithdraw = async () => {
@@ -85,15 +98,6 @@ const Withdraw: React.FC<WithdrawProps> = () => {
     }
   }
 
-  // const streamendtime = async () => {
-  //   await streamEndTime(algorand, dmClient, activeAddress!, appId)()
-  // }  // Was used for accurate testing stream end time off-chain and on-chain
-
-  // const currentWithdrawAmount = async () => {
-  //   const availableAmount = await getCurrentWithdawamount(algorand, dmClient, activeAddress!, appId)()
-  //   const availableAmountAlgo = availableAmount / 1000000
-  //   setCurrentwithdrawAmount(availableAmountAlgo)
-  // }
   //FIF
   const calculateAnimationDuration = () => {
     if (streamFlowRate > 0 && streamContractBalance > 0) {
@@ -104,8 +108,6 @@ const Withdraw: React.FC<WithdrawProps> = () => {
       const currentTime = Math.floor(Date.now() / 1000)
 
       if (currentTime >= epochStreamfinishTime) {
-        // console.log('Stream has ended')
-        // toast.info('Stream has ended')
         setAnimationDuration(0)
         setFinalDisplayAmount(streamContractBalance)
         return // Stop further calculations
@@ -123,14 +125,6 @@ const Withdraw: React.FC<WithdrawProps> = () => {
       setAnimationDuration(totalDuration)
     }
   }
-  //FIF
-  // const fetchIsStreaming = async (steamAbiClient: SteamClient) => {
-  //   if (activeAddress && appId > 0) {
-  //     const streamData = await steamAbiClient.getGlobalState()
-  //     const isStreaming = streamData.isStreaming?.asNumber() ?? 0
-  //     setIsStreaming(isStreaming)
-  //   }
-  // }
 
   async function fetchStreamBoxData() {
     try {
@@ -177,28 +171,9 @@ const Withdraw: React.FC<WithdrawProps> = () => {
       setStreamFlowRate(convstreamalgoFlowRate)
       setTotalUserWithdraw(convTotalwithdrawAmount)
       setReciverAddress(recipient)
-
-      console.log('Rate', rate)
-      console.log('startTime', startTime)
-      console.log('endTime', endTime)
-      console.log('withdrawnAmount', withdrawnAmount)
-      console.log('recipient', recipient)
-      console.log('streamCreator', streamCreator)
-      console.log('balance', balance)
-      console.log('isStreaming', isStreaming)
-      console.log('last_withdrawal_time', last_withdrawal_time)
     } catch (error) {
       console.error('Error fetching box data:', error)
-      throw error
-    }
-  }
-  async function listBoxes() {
-    try {
-      const boxList = await algorand.client.algod.getApplicationBoxes(appId).do()
-      // console.log('Box List:', boxList)
-      return boxList
-    } catch (error) {
-      console.error('Error listing boxes:', error)
+      toast.error('Incorrect StreamID')
       throw error
     }
   }
@@ -213,7 +188,6 @@ const Withdraw: React.FC<WithdrawProps> = () => {
     if (activeAddress && dmClient && streamId == 0n) {
       userBalanceFetch()
       console.log('1qwertyuiop')
-      fetchStreamBoxData()
     }
   }, [activeAddress, streamId, dmClient])
 
@@ -255,7 +229,7 @@ const Withdraw: React.FC<WithdrawProps> = () => {
       </div>
       <center>
         <div>
-          <ToastContainer position="top-right" autoClose={3000} />
+          <ToastContainer position="top-left" autoClose={3000} />
         </div>
       </center>
 
@@ -266,7 +240,7 @@ const Withdraw: React.FC<WithdrawProps> = () => {
             type="number"
             placeholder="Enter your AppId"
             className="bg-gray-50 border border-gray-300 text-gray-900 text-[18px]  rounded-lg focus:ring-blue-500  focus:border-blue-500 block w-full p-3 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            onChange={handleAppIdChange}
+            onChange={handleStreamIdChange}
           ></input>
           {!activeAddress && (
             <button className="btn rounded-2xl bg-purple-700 hover:bg-purple-800 text-white  text-base mt-4" onClick={toggleWalletModal}>

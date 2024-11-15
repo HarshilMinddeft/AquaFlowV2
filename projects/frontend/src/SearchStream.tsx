@@ -4,7 +4,7 @@ import { useWallet } from '@txnlab/use-wallet'
 import algosdk from 'algosdk'
 import dayjs from 'dayjs'
 import React, { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import AnimatedCounter from './components/AnimatedCounter'
@@ -46,6 +46,8 @@ const SearchStream: React.FC<SearchStreamProps> = () => {
   const [navigationMod, setNavigationMod] = useState<string>('SearchStream')
   const [internalTxns, setInternalTxns] = useState<Array<{ amount: number; receiver: string }>>([])
   const navigate = useNavigate()
+  const location = useLocation()
+  const streamIdFromState = location.state?.streamId
 
   const toggleWalletModal = () => {
     setOpenWalletModal(!openWalletModal)
@@ -80,8 +82,8 @@ const SearchStream: React.FC<SearchStreamProps> = () => {
       const NameofBox = boxValueResponse.name
       const dataView = new DataView(NameofBox.buffer)
       const decodedValue = dataView.getBigUint64(0, false)
-      // console.log('Box Name decoded:', decodedValue)
-      // console.log('Box Name:', boxValueResponse.name)
+      // console.log('Box Name decodedddddddddd:', decodedValue)
+      // console.log('Box Nameeeeeeeeeeeeeee:', boxValueResponse.name)
       // console.log('Box Value:', boxValueResponse.value)
 
       const ValueofBox = boxValueResponse.value
@@ -94,8 +96,8 @@ const SearchStream: React.FC<SearchStreamProps> = () => {
       const streamCreator = algosdk.encodeAddress(new Uint8Array(ValueofBox.slice(64, 96)))
       const balance = Number(boxvalues.getBigUint64(96, false))
       const isStreamingRaw = boxvalues.getUint8(104)
-      // const isStreaming = isStreamingRaw !== 0
       const last_withdrawal_time = Number(boxvalues.getBigUint64(105, false))
+      setStreamId(decodedValue)
 
       setepochStreamStartTime(startTime)
       setepochStreamfinishTime(endTime)
@@ -115,32 +117,12 @@ const SearchStream: React.FC<SearchStreamProps> = () => {
       setStreamFlowRate(convstreamalgoFlowRate)
       setTotalUserWithdraw(convTotalwithdrawAmount)
       setReciverAddress(recipient)
-
-      console.log('Rate', rate)
-      console.log('startTime', startTime)
-      console.log('endTime', endTime)
-      console.log('withdrawnAmount', withdrawnAmount)
-      console.log('recipient', recipient)
-      console.log('streamCreator', streamCreator)
-      console.log('balance', balance)
-      console.log('isStreaming', isStreaming)
-      console.log('last_withdrawal_time', last_withdrawal_time)
     } catch (error) {
       console.error('Error fetching box data:', error)
+      toast.error('Incorrect StreamID')
       throw error
     }
   }
-  async function listBoxes() {
-    try {
-      const boxList = await algorand.client.algod.getApplicationBoxes(appId).do()
-      // console.log('Box List:', boxList)
-      return boxList
-    } catch (error) {
-      console.error('Error listing boxes:', error)
-      throw error
-    }
-  }
-
   const funcStopStream = async () => {
     try {
       setLoding(true)
@@ -185,16 +167,6 @@ const SearchStream: React.FC<SearchStreamProps> = () => {
       toast.error('Error deleting contract or Invalid User')
     }
   }
-
-  //FIF
-  // const fetchIsStreaming = async (steamAbiClient: AquaFlowV2Client) => {
-  //   if (activeAddress && appId > 0) {
-  //     const streamData = await steamAbiClient.getGlobalState()
-  //     const isStreaming = streamData.isStreaming?.asNumber() ?? 0
-  //     setIsStreaming(isStreaming)
-  //   }
-  // }
-  //FIF
 
   //FIF
   const calculateStreamEndTime = () => {
@@ -269,6 +241,13 @@ const SearchStream: React.FC<SearchStreamProps> = () => {
   }
 
   useEffect(() => {
+    if (streamIdFromState) {
+      setStreamId(BigInt(streamIdFromState))
+      console.log('UseEffectOfResetStream=>', streamIdFromState)
+    }
+  }, [streamIdFromState])
+
+  useEffect(() => {
     if (appId > 0) updateStreamRate(amount, timeUnit)
     console.log('UF==>1')
   }, [])
@@ -277,7 +256,6 @@ const SearchStream: React.FC<SearchStreamProps> = () => {
   useEffect(() => {
     if (dmClient && activeAddress && streamId == 0n) {
       setSenderAddress(activeAddress)
-      fetchStreamBoxData()
       console.log('StreamId', streamId)
       userBalanceFetch()
       console.log('UF==>2')
@@ -421,6 +399,10 @@ const SearchStream: React.FC<SearchStreamProps> = () => {
           <div className="backdrop-blur-[5px] bg-[rgba(44,33,59,0.48)]  p-4 rounded-2xl mb-5 border-white border-solid border-2">
             <table className="border-3  text-gray-500 dark:text-gray-400">
               <tbody>
+                <tr className="flex border-solid border-b border-slate-200">
+                  <th className="text-white font-medium mt-1 ">Your StreamId</th>
+                  <th className="text-white ml-auto mt-2 mr-2 ">{Number(streamId)}</th>
+                </tr>
                 <tr className="flex border-solid border-b border-slate-200">
                   <th className="text-white font-medium mt-1 ">Receiver</th>
                   <th className="text-white ml-32 mt-2 mr-2 ">{reciverAddress}</th>

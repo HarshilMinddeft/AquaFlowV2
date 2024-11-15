@@ -314,7 +314,6 @@ const Home: React.FC<HomeProps> = () => {
     if (activeAddress && dmClient && streamId == 0n) {
       setSenderAddress(activeAddress)
       console.log('StreamId=>', streamId)
-      fetchStreamBoxData()
       userBalanceFetch()
       console.log('UseEffect 2')
     }
@@ -371,31 +370,39 @@ const Home: React.FC<HomeProps> = () => {
           <ToastContainer position="top-right" autoClose={3000} />
         </div>
       </center>
-      {appId > 0 && (
-        <div className="flex flex-row justify-center mt-5">
-          <div className=" px-[10px] flex flex-row items-center ">
-            <div className="py-[1px] rounded-3xl text-gray-200">
-              <button
-                onClick={(e) => {
-                  setNavigationMod('DeployApp')
-                }}
-                className={`text-white mt-1 ml-3 border-[#170c31f5] from-[#1e0e44bd]  to-[#180b3698] hover:bg-gradient-to-bl font-medium rounded-xl text-[19px] px-5 py-2 text-center me-2 mb-2
-                ${navigationMod === 'DeployApp' ? 'bg-[#361352f5] border-[#2d1672dc] from-[#170c31f5] to-[#170c31f5] hover:bg-gradient-to-bl' : ''}`}
-              >
-                CreateStream
-              </button>
 
-              <button
-                onClick={() => navigate('/SearchStream')}
-                className={`text-white mt-1 ml-3 border-[#170c31f5] from-[#1e0e44bd]  to-[#180b3698] hover:bg-gradient-to-bl font-medium rounded-xl text-[19px] px-5 py-2 text-center me-2 mb-2
+      <div className="flex flex-row justify-center mt-5">
+        <div className=" px-[10px] flex flex-row items-center ">
+          <div className="py-[1px] rounded-3xl text-gray-200">
+            <button
+              onClick={(e) => {
+                setNavigationMod('DeployApp')
+              }}
+              className={`text-white mt-1 ml-3 border-[#170c31f5] from-[#1e0e44bd]  to-[#180b3698] hover:bg-gradient-to-bl font-medium rounded-xl text-[19px] px-5 py-2 text-center me-2 mb-2
+                ${navigationMod === 'DeployApp' ? 'bg-[#361352f5] border-[#2d1672dc] from-[#170c31f5] to-[#170c31f5] hover:bg-gradient-to-bl' : ''}`}
+            >
+              CreateStream
+            </button>
+
+            <button
+              onClick={() => navigate('/SearchStream')}
+              className={`text-white mt-1 ml-3 border-[#170c31f5] from-[#1e0e44bd]  to-[#180b3698] hover:bg-gradient-to-bl font-medium rounded-xl text-[19px] px-5 py-2 text-center me-2 mb-2
                 ${navigationMod === 'SearchApp' ? 'bg-[#361352f5] border-[#2d1672dc] from-[#170c31f5] to-[#170c31f5] hover:bg-gradient-to-bl' : ''}`}
-              >
-                SearchStream
-              </button>
-            </div>
+            >
+              SearchStream
+            </button>
           </div>
         </div>
+      </div>
+      {!activeAddress && (
+        <button
+          className="btn hero rounded-2xl bg-purple-700 hover:bg-purple-800 max-w-md  text-white text-[20px] px-11 mt-4 mx-auto"
+          onClick={toggleWalletModal}
+        >
+          Connect Wallet
+        </button>
       )}
+
       {activeAddress && appId > 0 && isStreaming === 128 && (
         <div className="text-center rounded-2xl mt-11 border-solid border-2 slate-800 p-4 max-w-md backdrop-blur-[5px] bg-[rgba(21,6,29,0.8)]  mx-auto">
           <label className="block text-[19px] mb-2 font-medium text-gray-900 dark:text-white">Stream ID</label>
