@@ -52,7 +52,6 @@ async function fetchStreamData(algorand: algokit.AlgorandClient, appId: number, 
     // Decode the box data if needed (depends on how data is stored in the box)
     const decodedData = new TextDecoder().decode(boxValueResponse.value)
 
-    console.log('Fetched Stream Data:', decodedData)
     return decodedData
   } catch (error) {
     console.error('Error fetching box data:', error)
@@ -75,8 +74,6 @@ export function startStream(
       const streamRateInMicroAlgos = convertToMicroAlgos(streamRate)
       const appAddress = getApplicationAddress(appId)
       const algoAmount = algokit.microAlgos(Number(amount))
-      // console.log('after Stream Rate:', streamRate)
-      // console.log('After Amount:', algoAmount)
 
       const paymentTxn = await algorand.send.payment({
         sender, // Sender's address (wallet)
@@ -97,10 +94,6 @@ export function startStream(
 
       // Create payment transaction
       const newStreamId = startStreamResult.return
-      console.log('newStreamId', newStreamId)
-
-      // console.log('Payment transaction ID:', paymentTxn.txIds)
-      // console.log('Payment transaction sent:', paymentTxn.returns)
       return newStreamId as any
     } catch (error) {
       console.error('Failed to start stream:', error)
@@ -124,7 +117,6 @@ export function startStreamWithExistId(
       const streamRateInMicroAlgos = convertToMicroAlgos(streamRate)
       const appAddress = getApplicationAddress(appId)
       const algoAmount = algokit.microAlgos(Number(amount))
-      console.log('Datas', streamId, streamCreator, recipient, streamRateInMicroAlgos, amount)
       const startExistIdStream = await AquaFlowAbiClient.startWithExistingId(
         { streamId, recipient, rate: streamRateInMicroAlgos, amount },
         { sendParams: { populateAppCallResources: true } },
@@ -153,7 +145,6 @@ export function withdraw(
   return async () => {
     try {
       const appAddress = getApplicationAddress(appId)
-      console.log('App ID:', appAddress)
 
       // Prompt user for a fee
       const userFee = parseFloat('0.002')
@@ -211,11 +202,8 @@ export function stopStream(
 
         // Check if inner transactions exist
         if (confirmation.innerTxns && confirmation.innerTxns.length > 0) {
-          console.log(`Found ${confirmation.innerTxns.length} internal transactions:`)
-
           // Loop through each internal transaction and log its details
           confirmation.innerTxns.forEach((innerTxn, index) => {
-            console.log(`Internal Transaction ${index + 1}:`)
             const txnDetails = innerTxn.txn
             const amount = Number(txnDetails.txn.amt) / 1000000
             const receiver = algosdk.encodeAddress(txnDetails.txn.rcv as any)
@@ -225,17 +213,17 @@ export function stopStream(
               receiver,
             })
 
-            console.log('Amount:', Number(txnDetails.txn.amt) / 1000000)
-            console.log('Sender:', algosdk.encodeAddress(txnDetails.txn.snd))
-            // console.log('ReceiverEncodeLease:', algokit.encodeLease(txnDetails.txn.rcv))
-            console.log('First valid round:', txnDetails.txn.fv)
-            console.log('Last valid round:', txnDetails.txn.lv)
+            // console.log('Amount:', Number(txnDetails.txn.amt) / 1000000)
+            // console.log('Sender:', algosdk.encodeAddress(txnDetails.txn.snd))
+            // // console.log('ReceiverEncodeLease:', algokit.encodeLease(txnDetails.txn.rcv))
+            // console.log('First valid round:', txnDetails.txn.fv)
+            // console.log('Last valid round:', txnDetails.txn.lv)
           })
         } else {
-          console.log('No internal transactions found.')
+          // console.log('No internal transactions found.')
         }
       } else {
-        console.log('No confirmations found.')
+        // console.log('No confirmations found.')
       }
       return internalTransactions
     } catch (error) {
@@ -252,7 +240,6 @@ export function stopStream(
 // ) {
 //   return async () => {
 //     const withdrawAmount = await AquaFlowAbiClient.getWithdrawAmount({})
-//     console.log('CurrentWithdrawAmount', withdrawAmount.return?.toString())
 //     return Number(withdrawAmount.return?.toString() || 0)
 //   }
 // }
@@ -271,18 +258,15 @@ export function deleteStream(
         { streamId },
         { sendParams: { fee: algokit.algos(0.003), populateAppCallResources: true } },
       )
-      console.log('DeleteappConformations', deleteAapp.confirmations)
       // Check if there are inner transactions
       if (deleteAapp.confirmations && deleteAapp.confirmations.length > 0) {
         const confirmation = deleteAapp.confirmations[0]
 
         // Check if inner transactions exist
         if (confirmation.innerTxns && confirmation.innerTxns.length > 0) {
-          console.log(`Found ${confirmation.innerTxns.length} internal transactions:`)
-
           // Loop through each internal transaction and log its details
           confirmation.innerTxns.forEach((innerTxn, index) => {
-            console.log(`Internal Transaction ${index + 1}:`)
+            // console.log(`Internal Transaction ${index + 1}:`)
             const txnDetails = innerTxn.txn
             const amount = Number(txnDetails.txn.amt) / 1000000
             const receiver = algosdk.encodeAddress(txnDetails.txn.rcv as any)
@@ -291,18 +275,10 @@ export function deleteStream(
               amount,
               receiver,
             })
-
-            console.log('Amount:', Number(txnDetails.txn.amt) / 1000000)
-            console.log('Sender:', algosdk.encodeAddress(txnDetails.txn.snd))
-            // console.log('ReceiverEncodeLease:', algokit.encodeLease(txnDetails.txn.rcv))
-            console.log('First valid round:', txnDetails.txn.fv)
-            console.log('Last valid round:', txnDetails.txn.lv)
           })
         } else {
-          console.log('No internal transactions found.')
         }
       } else {
-        console.log('No confirmations found.')
       }
       return internalTransactions
       // return deleteAapp.confirmations
@@ -322,6 +298,5 @@ export function streamEndTime(
   return async () => {
     const appAddress = getApplicationAddress(appId)
     const streamendTime = await AquaFlowAbiClient.getStreamEndTime({ streamId })
-    console.log('steam End time=>', streamendTime.return?.toString())
   }
 }

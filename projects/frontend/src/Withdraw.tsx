@@ -11,6 +11,7 @@ import Nav from './components/Nav'
 import Transact from './components/Transact'
 import { AquaFlowV2Client } from './contracts/AquaFlowV2'
 import { withdraw } from './methods'
+import useDebounce from './utils/hooks/useDebounce'
 import { getAlgodConfigFromViteEnvironment } from './utils/network/getAlgoClientConfigs'
 
 interface WithdrawProps {}
@@ -21,10 +22,10 @@ const Withdraw: React.FC<WithdrawProps> = () => {
   const [appId, setAppId] = useState<number>(729020888)
   const { activeAddress, signer } = useWallet()
   const [isStreaming, setIsStreaming] = useState<number>(0)
-  // const [currentwithdrawAmount, setCurrentwithdrawAmount] = useState<number>(0)
   const [streamContractBalance, setStreamContractBalance] = useState<number>(0)
   const [streamStartTime, setStreamStartTime] = useState<string>()
   const [streamId, setStreamId] = useState<bigint>(0n)
+  const debounceStreamId = useDebounce(streamId, 400)
   const [streamFinishTime, setStreamFinishTime] = useState<string>()
   const [streamFlowRate, setStreamFlowRate] = useState<number>(0)
   const [totalUserWithdraw, setTotalUserWithdraw] = useState<number>(0)
@@ -37,6 +38,7 @@ const Withdraw: React.FC<WithdrawProps> = () => {
 
   const toggleWalletModal = () => {
     setOpenWalletModal(!openWalletModal)
+    userBalanceFetch()
   }
 
   const algodConfig = getAlgodConfigFromViteEnvironment()
@@ -110,7 +112,7 @@ const Withdraw: React.FC<WithdrawProps> = () => {
       if (currentTime >= epochStreamfinishTime) {
         setAnimationDuration(0)
         setFinalDisplayAmount(streamContractBalance)
-        return // Stop further calculations
+        return
       }
 
       const elapsedtime = currentTime - epochStreamStartTime
@@ -174,6 +176,7 @@ const Withdraw: React.FC<WithdrawProps> = () => {
     } catch (error) {
       console.error('Error fetching box data:', error)
       toast.error('Incorrect StreamID')
+      setIsStreaming(0)
       throw error
     }
   }
@@ -184,28 +187,28 @@ const Withdraw: React.FC<WithdrawProps> = () => {
     const userBalance = accountInfo.amount
     setUserAccountBalance(userBalance / 1e6)
   }
+
   useEffect(() => {
     if (activeAddress && dmClient && streamId == 0n) {
       userBalanceFetch()
-      console.log('1qwertyuiop')
     }
   }, [activeAddress, streamId, dmClient])
 
   useEffect(() => {
-    if (streamId) {
+    if (debounceStreamId) {
       fetchStreamBoxData()
       userBalanceFetch()
-      console.log('UseEffect 5')
     }
-  }, [streamId, totalUserWithdraw])
+  }, [debounceStreamId, totalUserWithdraw])
 
   useEffect(() => {
     if (Date.now() / 1000 < epochStreamfinishTime) {
       const interval = setInterval(() => {
         calculateAnimationDuration()
-        console.log('2qwertyuiop')
       }, 1000)
       return () => clearInterval(interval)
+    } else {
+      setFinalDisplayAmount(streamContractBalance)
     }
     return () => {
       setFinalDisplayAmount(streamContractBalance)
@@ -235,10 +238,10 @@ const Withdraw: React.FC<WithdrawProps> = () => {
 
       <div className="text-center rounded-2xl mt-8 border-solid border-2 border-white p-4 max-w-md backdrop-blur-[5px] bg-[rgba(21,6,29,0.8)] mx-auto">
         <div className="max-w-md">
-          <label className="block mb-2 text-lg font-medium text-gray-900 dark:text-white">Enter Your app ID</label>
+          <label className="block mb-2 text-lg font-medium text-gray-900 dark:text-white">Enter Your StreamId</label>
           <input
             type="number"
-            placeholder="Enter your AppId"
+            placeholder="4"
             className="bg-gray-50 border border-gray-300 text-gray-900 text-[18px]  rounded-lg focus:ring-blue-500  focus:border-blue-500 block w-full p-3 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             onChange={handleStreamIdChange}
           ></input>
@@ -265,10 +268,10 @@ const Withdraw: React.FC<WithdrawProps> = () => {
           <div className="backdrop-blur-[5px] bg-[rgba(44,33,59,0.48)]  p-4 rounded-2xl mt-5 mb-5 border-white border-solid border-2">
             <table className="border-3  text-gray-500 dark:text-gray-400">
               <tbody>
-                {/* <tr className="flex border-solid border-b border-slate-200">
-                  <th className="text-white font-medium mt-1 ">Current Available Amount</th>
-                  <th className="text-green-300 ml-auto mr-2 ">{currentwithdrawAmount} Algos</th>
-                </tr> */}
+                <tr className="flex border-solid border-b border-slate-200">
+                  <th className="text-white font-medium mt-1 ">Your StreamId</th>
+                  <th className="text-white ml-auto mt-2 mr-2 ">{Number(debounceStreamId)}</th>
+                </tr>
                 <tr className="flex border-solid border-b border-slate-200">
                   <th className="text-white font-medium mt-1 ">Your Address</th>
                   <th className="text-white ml-32 mr-2 ">{reciverAddress}</th>

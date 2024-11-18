@@ -50,6 +50,7 @@ const Home: React.FC<HomeProps> = () => {
 
   const toggleWalletModal = () => {
     setOpenWalletModal(!openWalletModal)
+    userBalanceFetch()
   }
 
   const algodConfig = getAlgodConfigFromViteEnvironment()
@@ -121,16 +122,6 @@ const Home: React.FC<HomeProps> = () => {
       throw error
     }
   }
-  async function listBoxes() {
-    try {
-      const boxList = await algorand.client.algod.getApplicationBoxes(appId).do()
-      // console.log('Box List:', boxList)
-      return boxList
-    } catch (error) {
-      console.error('Error listing boxes:', error)
-      throw error
-    }
-  }
 
   // Create stream method reference
   // const createStream = async () => {
@@ -167,7 +158,6 @@ const Home: React.FC<HomeProps> = () => {
       const deleteConfirmation = await deleteStream(algorand, dmClient, activeAddress!, appId, streamId)()
       if (deleteConfirmation) {
         setInternalTxns(deleteConfirmation)
-        console.log('Contract deletion confirmed:', deleteConfirmation)
         setStreamId(0n)
         setStreamRate(0n)
         setIsStreaming(0)
@@ -175,10 +165,8 @@ const Home: React.FC<HomeProps> = () => {
         setepochStreamStartTime(0)
         setepochStreamfinishTime(0)
         setTotalUserWithdraw(0)
-        console.log('Detailes', streamId, streamRate, isStreaming, streamContractBalance, totalUserWithdraw)
         toast.success('Stream Deleted')
       } else {
-        console.log('Error In deleting stream')
       }
     } catch (error) {
       console.error('Error deleting Stream:', error)
@@ -209,7 +197,6 @@ const Home: React.FC<HomeProps> = () => {
       setLoding(true)
       const streamStarted = await startStream(algorand, dmClient, activeAddress!, sender, streamRate, recipient, amount, appId)()
       setStreamId(streamStarted ?? 0n)
-      console.log('streamStarted ID', streamStarted)
       setLoding(false)
       await fetchStreamBoxData()
       // setIsStreaming(0) // Only set streaming state if startStream is successful
@@ -307,15 +294,12 @@ const Home: React.FC<HomeProps> = () => {
 
   useEffect(() => {
     if (appId > 0) updateStreamRate(amount, timeUnit)
-    console.log('UseEffect 1')
   }, [])
 
   useEffect(() => {
     if (activeAddress && dmClient && streamId == 0n) {
       setSenderAddress(activeAddress)
-      console.log('StreamId=>', streamId)
       userBalanceFetch()
-      console.log('UseEffect 2')
     }
   }, [activeAddress, streamId, dmClient])
 
@@ -323,14 +307,12 @@ const Home: React.FC<HomeProps> = () => {
     if (streamId) {
       fetchStreamBoxData()
       userBalanceFetch()
-      console.log('UseEffect 5')
     }
   }, [streamId])
 
   useEffect(() => {
     if (streamRate > 0 && amount > 0) {
       calculateStreamEndTime()
-      console.log('UseEffect 3')
     } else {
       setApproxEndTime('')
     }
@@ -340,12 +322,10 @@ const Home: React.FC<HomeProps> = () => {
     if (Date.now() / 1000 < epochStreamfinishTime) {
       const interval = setInterval(() => {
         calculateAnimationDuration()
-        console.log('UseEffect 4')
       }, 1000)
       return () => clearInterval(interval)
     }
     return () => {
-      console.log('ENDNENDE')
       setdisplayFlowAmount(0)
       setAnimationDuration(0)
     }
@@ -493,12 +473,12 @@ const Home: React.FC<HomeProps> = () => {
                   <input
                     type="number"
                     placeholder="1"
+                    min={0}
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-lg rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     // value={Number(amount) / 1e6}
                     onChange={(e) => {
                       const inputVal = e.target.valueAsNumber // Get the value as a number (in Algos)
                       const microAlgos = BigInt(Math.round(inputVal * 1e6)) // Convert Algos to microAlgos as BigInt
-                      console.log('InputAmount', microAlgos)
                       setAmount(microAlgos) // Store as BigInt (μAlgos)
                       setTimeUnit('sec')
                     }}
@@ -511,11 +491,11 @@ const Home: React.FC<HomeProps> = () => {
                       type="number"
                       step="0.000001"
                       placeholder="0.01"
+                      min={0}
                       className="bg-gray-50 border border-gray-300 text-gray-900 text-lg rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                       onChange={(e) => {
                         const inputVal = e.currentTarget.valueAsNumber
                         const bigintVal = BigInt(Math.round(inputVal * 1e6)) // Convert the decimal to μAlgos as BigInt
-                        console.log('FlowRateAs', bigintVal)
                         setStreamRate(bigintVal)
                         setTimeUnit('sec')
                       }}
@@ -551,7 +531,6 @@ const Home: React.FC<HomeProps> = () => {
                       onChange={(e) => {
                         const inputVal = e.currentTarget.valueAsNumber
                         const bigintVal = BigInt(Math.round(inputVal * 1e6))
-                        console.log('FlowRateAs', bigintVal)
                         setStreamRate(bigintVal)
                       }}
                     />

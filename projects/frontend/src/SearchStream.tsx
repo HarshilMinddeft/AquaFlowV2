@@ -14,6 +14,7 @@ import Nav from './components/Nav'
 import Transact from './components/Transact'
 import { AquaFlowV2Client } from './contracts/AquaFlowV2'
 import { deleteStream, stopStream } from './methods'
+import useDebounce from './utils/hooks/useDebounce'
 import { getAlgodConfigFromViteEnvironment } from './utils/network/getAlgoClientConfigs'
 interface SearchStreamProps {}
 
@@ -22,6 +23,7 @@ const SearchStream: React.FC<SearchStreamProps> = () => {
   const [openDemoModal, setOpenDemoModal] = useState<boolean>(false)
   const [appId, setAppId] = useState<number>(729020888)
   const [streamId, setStreamId] = useState<bigint>(0n)
+  const debounceStreamId = useDebounce(streamId, 500)
   const { activeAddress, signer } = useWallet()
   const [sender, setSenderAddress] = useState<string>('')
   const [streamRate, setStreamRate] = useState<bigint>(0n)
@@ -51,6 +53,7 @@ const SearchStream: React.FC<SearchStreamProps> = () => {
 
   const toggleWalletModal = () => {
     setOpenWalletModal(!openWalletModal)
+    userBalanceFetch()
   }
 
   const algodConfig = getAlgodConfigFromViteEnvironment()
@@ -120,6 +123,7 @@ const SearchStream: React.FC<SearchStreamProps> = () => {
     } catch (error) {
       console.error('Error fetching box data:', error)
       toast.error('Incorrect StreamID')
+      setIsStreaming(0)
       throw error
     }
   }
@@ -135,13 +139,12 @@ const SearchStream: React.FC<SearchStreamProps> = () => {
       if (error instanceof Error) {
         setLoding(false)
         if (error.message.includes('Sender; ==; assert')) {
-          console.error('Caught a URLTokenBaseHTTPError:', error.message)
           toast.error('You are not creator of this stream')
         } else {
-          console.error('An error occurred:', error.message)
+          // console.error('An error occurred:', error.message)
         }
       } else {
-        console.error('An unknown error occurred:', error)
+        // console.error('An unknown error occurred:', error)
       }
     }
   }
@@ -151,7 +154,6 @@ const SearchStream: React.FC<SearchStreamProps> = () => {
       const deleteConfirmation = await deleteStream(algorand, dmClient, activeAddress!, appId, streamId)()
       if (deleteConfirmation) {
         setInternalTxns(deleteConfirmation)
-        console.log('Contract deletion confirmed:', deleteConfirmation)
         setStreamId(0n)
         setStreamRate(0n)
         setIsStreaming(0)
@@ -163,7 +165,7 @@ const SearchStream: React.FC<SearchStreamProps> = () => {
         toast.error('You are not owner of this stream')
       }
     } catch (error) {
-      console.error('Error deleting contract:', error)
+      // console.error('Error deleting contract:', error)
       toast.error('Error deleting contract or Invalid User')
     }
   }
@@ -243,38 +245,32 @@ const SearchStream: React.FC<SearchStreamProps> = () => {
   useEffect(() => {
     if (streamIdFromState) {
       setStreamId(BigInt(streamIdFromState))
-      console.log('UseEffectOfResetStream=>', streamIdFromState)
     }
   }, [streamIdFromState])
 
   useEffect(() => {
     if (appId > 0) updateStreamRate(amount, timeUnit)
-    console.log('UF==>1')
   }, [])
 
   // UseEffect will run will till user stream is created and it gets BoxId
   useEffect(() => {
     if (dmClient && activeAddress && streamId == 0n) {
       setSenderAddress(activeAddress)
-      console.log('StreamId', streamId)
       userBalanceFetch()
-      console.log('UF==>2')
     }
   }, [dmClient, activeAddress, streamId])
 
   // UseEffect will run once after stream is created for fetching boxdata
   useEffect(() => {
-    if (streamId) {
+    if (debounceStreamId) {
       fetchStreamBoxData()
       userBalanceFetch()
-      console.log('UseEffect 5')
     }
-  }, [streamId])
+  }, [debounceStreamId])
 
   useEffect(() => {
     if (streamRate > 0 && amount > 0) {
       calculateStreamEndTime()
-      console.log('UF==>3')
     } else {
       setApproxEndTime('')
     }
@@ -284,12 +280,13 @@ const SearchStream: React.FC<SearchStreamProps> = () => {
     if (Date.now() / 1000 < epochStreamfinishTime) {
       const interval = setInterval(() => {
         calculateAnimationDuration()
-        console.log('UF==>5')
       }, 1000)
       return () => clearInterval(interval)
+    } else {
+      setdisplayFlowAmount(0)
     }
+
     return () => {
-      console.log('ENDNENDE')
       setdisplayFlowAmount(0)
       setAnimationDuration(0)
     }
@@ -311,7 +308,7 @@ const SearchStream: React.FC<SearchStreamProps> = () => {
       </div>
       <center>
         <div className="">
-          <ToastContainer position="top-right" autoClose={3000} />
+          <ToastContainer position="top-left" autoClose={3000} />
         </div>
       </center>
       {appId > 0 && (
@@ -345,7 +342,8 @@ const SearchStream: React.FC<SearchStreamProps> = () => {
           <label className="block text-[19px] mb-4 font-medium text-gray-900 dark:text-white">Search for existing steram</label>
           <input
             type="number"
-            placeholder="Enter AppId"
+            min={0}
+            placeholder="Enter StreamId"
             className="bg-gray-50 border border-gray-300 text-gray-900 text-[18px]  rounded-lg focus:ring-blue-500  focus:border-blue-500 block w-full p-3 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             onChange={handleAppIdChange}
           ></input>
@@ -401,7 +399,7 @@ const SearchStream: React.FC<SearchStreamProps> = () => {
               <tbody>
                 <tr className="flex border-solid border-b border-slate-200">
                   <th className="text-white font-medium mt-1 ">Your StreamId</th>
-                  <th className="text-white ml-auto mt-2 mr-2 ">{Number(streamId)}</th>
+                  <th className="text-white ml-auto mt-2 mr-2 ">{Number(debounceStreamId)}</th>
                 </tr>
                 <tr className="flex border-solid border-b border-slate-200">
                   <th className="text-white font-medium mt-1 ">Receiver</th>

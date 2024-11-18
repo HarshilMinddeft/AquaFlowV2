@@ -83,7 +83,6 @@ const RestartStream: React.FC<RestartStreamProps> = () => {
         appId,
         streamId,
       )()
-      console.log('streamStarted ID', streamStarted)
       setLoding(false)
       navigate('/SearchStream', { state: { streamId } })
       // setIsStreaming(0) // Only set streaming state if startStream is successful
@@ -117,7 +116,6 @@ const RestartStream: React.FC<RestartStreamProps> = () => {
   const userBalanceFetch = async () => {
     const accountInfo = await algorand.client.algod.accountInformation(activeAddress!).do()
     const userBalance = accountInfo.amount
-    console.log('userBalance', userBalance)
     setUserAccountBalance(userBalance / 1e6)
   }
 
@@ -158,30 +156,24 @@ const RestartStream: React.FC<RestartStreamProps> = () => {
 
   useEffect(() => {
     if (appId > 0) updateStreamRate(amount, timeUnit)
-
-    console.log('UseEffect 1')
   }, [])
 
   useEffect(() => {
     if (activeAddress && dmClient) {
       setSenderAddress(activeAddress)
-      console.log('StreamId=>', streamId)
       userBalanceFetch()
-      console.log('UseEffect 2')
     }
   }, [activeAddress, streamId, dmClient])
 
   useEffect(() => {
     if (streamId) {
       userBalanceFetch()
-      console.log('UseEffect 5')
     }
   }, [streamId])
 
   useEffect(() => {
     if (streamRate > 0 && amount > 0) {
       calculateStreamEndTime()
-      console.log('UseEffect 3')
     } else {
       setApproxEndTime('')
     }
@@ -243,7 +235,6 @@ const RestartStream: React.FC<RestartStreamProps> = () => {
                     onChange={(e) => {
                       const inputVal = e.target.valueAsNumber // Get the value as a number (in Algos)
                       const microAlgos = BigInt(Math.round(inputVal * 1e6)) // Convert Algos to microAlgos as BigInt
-                      console.log('InputAmount', microAlgos)
                       setAmount(microAlgos) // Store as BigInt (μAlgos)
                       setTimeUnit('sec')
                     }}
@@ -260,7 +251,6 @@ const RestartStream: React.FC<RestartStreamProps> = () => {
                       onChange={(e) => {
                         const inputVal = e.currentTarget.valueAsNumber
                         const bigintVal = BigInt(Math.round(inputVal * 1e6)) // Convert the decimal to μAlgos as BigInt
-                        console.log('FlowRateAs', bigintVal)
                         setStreamRate(bigintVal)
                         setTimeUnit('sec')
                       }}
@@ -296,7 +286,6 @@ const RestartStream: React.FC<RestartStreamProps> = () => {
                       onChange={(e) => {
                         const inputVal = e.currentTarget.valueAsNumber
                         const bigintVal = BigInt(Math.round(inputVal * 1e6))
-                        console.log('FlowRateAs', bigintVal)
                         setStreamRate(bigintVal)
                       }}
                     />

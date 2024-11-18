@@ -8,7 +8,6 @@ const Nav = () => {
 
   const handleReload = () => {
     if (location.pathname === '/') {
-      // Force page reload if already on the same route
       window.location.reload()
     }
   }
@@ -46,7 +45,7 @@ const Nav = () => {
                 className={`text-white mt-1 border-[#2d1672dc] hover:bg-gradient-to-bl from-[#170c31f5] to-[#170c31f5] font-medium rounded-xl ml-6 text-[19px] px-5 py-2 text-center me-2 mb-2
                   ${isActive('/History') ? 'bg-[#170c31f5] border-[#2d1672dc] from-[#170c31f5] to-[#170c31f5] hover:bg-gradient-to-bl' : ''}`}
               >
-                Apphistory
+                StreamsHistory
               </Link>
             </div>
           </div>

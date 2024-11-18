@@ -63,8 +63,6 @@ const AccountHistory: React.FC<AccountHistoryProps> = () => {
   async function listBoxes() {
     try {
       const boxList = await algorand.client.algod.getApplicationBoxes(appId).do()
-      console.log('Box List:', boxList)
-
       // Convert each box name from Uint8Array to integer
       const decodedBoxNumbers = boxList.boxes.map((boxDescriptor) => {
         const boxNameArray = boxDescriptor.name
@@ -113,9 +111,6 @@ const AccountHistory: React.FC<AccountHistoryProps> = () => {
       }
 
       setStreamData(allStreamData)
-      console.log('allStreamData', allStreamData)
-
-      console.log('Decoded Box Numbers:', decodedBoxNumbers)
       return decodedBoxNumbers
     } catch (error) {
       console.error('Error listing boxes:', error)
@@ -127,7 +122,6 @@ const AccountHistory: React.FC<AccountHistoryProps> = () => {
     if (activeAddress) {
       userBalanceFetch()
       listBoxes()
-      console.log('Fetching')
     }
   }, [activeAddress])
 
