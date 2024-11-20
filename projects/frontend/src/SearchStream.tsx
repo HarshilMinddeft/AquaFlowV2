@@ -29,7 +29,8 @@ const SearchStream: React.FC<SearchStreamProps> = () => {
   const [streamRate, setStreamRate] = useState<bigint>(0n)
   const [isStreaming, setIsStreaming] = useState<number>(0)
   const [loding, setLoding] = useState<boolean>(false)
-  const [recipient, setRecipient] = useState<string>('')
+  // const [recipient, setRecipient] = useState<string>('')
+  const [creatorDAddress, setcreatorDAddress] = useState<string>()
   const [amount, setAmount] = useState<bigint>(0n)
   const [streamApproxEndTime, setApproxEndTime] = useState<string>('')
   const [streamApproxHoursMins, setstreamApproxHoursMins] = useState<string>('')
@@ -38,7 +39,7 @@ const SearchStream: React.FC<SearchStreamProps> = () => {
   const [streamFinishTime, setStreamFinishTime] = useState<string>()
   const [streamFlowRate, setStreamFlowRate] = useState<number>(0)
   const [totalUserWithdraw, setTotalUserWithdraw] = useState<number>(0)
-  const [reciverAddress, setReciverAddress] = useState<string>()
+  const [reciverAddress, setReciverAddress] = useState<string>('')
   const [animationDuration, setAnimationDuration] = useState<number>(0)
   const [epochStreamStartTime, setepochStreamStartTime] = useState<number>(0)
   const [userAccountBalance, setUserAccountBalance] = useState<number>()
@@ -104,6 +105,7 @@ const SearchStream: React.FC<SearchStreamProps> = () => {
 
       setepochStreamStartTime(startTime)
       setepochStreamfinishTime(endTime)
+      setcreatorDAddress(streamCreator)
 
       const convTotalwithdrawAmount = withdrawnAmount / 1000000
       const convstreamalgoFlowRate = rate / 1000000
@@ -130,7 +132,7 @@ const SearchStream: React.FC<SearchStreamProps> = () => {
   const funcStopStream = async () => {
     try {
       setLoding(true)
-      const transactions = await stopStream(algorand, dmClient, activeAddress!, appId, recipient, streamId)()
+      const transactions = await stopStream(algorand, dmClient, activeAddress!, appId, reciverAddress, streamId)()
       setInternalTxns(transactions)
       setLoding(false)
       await fetchStreamBoxData()
@@ -297,7 +299,7 @@ const SearchStream: React.FC<SearchStreamProps> = () => {
       <center>
         <button
           data-test-id="connect-wallet"
-          className="btn px-8 bg-purple-700 z-10 mt-2 right-2 hover:bg-purple-800 text-white pb-3 pt-2 text-xl rounded-2xl absolute "
+          className="btn px-5 bg-purple-700 z-10 mt-2 right-2 hover:bg-purple-800 text-white pb-3 pt-2 text-xl rounded-2xl absolute "
           onClick={toggleWalletModal}
         >
           {!activeAddress ? 'Connect Wallet' : activeAddress && `Balance ${userAccountBalance} algos`}
@@ -338,7 +340,7 @@ const SearchStream: React.FC<SearchStreamProps> = () => {
         </div>
       )}
       {appId > 0 && activeAddress && navigationMod == 'SearchStream' ? (
-        <div className="text-center rounded-2xl mt-3 border-solid border-2 border-slate-800 p-4 max-w-md backdrop-blur-[5px] bg-[rgba(21,6,29,0.8)]  mx-auto">
+        <div className="text-center rounded-2xl mt-3 border-solid border-2 border-slate-800 p-3 max-w-md backdrop-blur-[5px] bg-[rgba(21,6,29,0.8)]  mx-auto">
           <label className="block text-[19px] mb-4 font-medium text-gray-900 dark:text-white">Search for existing steram</label>
           <input
             type="number"
@@ -358,17 +360,28 @@ const SearchStream: React.FC<SearchStreamProps> = () => {
       ) : null}
 
       {activeAddress && appId > 0 && isStreaming === 128 && (
-        <div className="mt-16 mx-auto max-w-xl">
-          <div className="mb-11 flex">
-            <h2 className="text-[22px] font-medium text-gray-900 dark:text-white mr-8">FlowStarted</h2>
-            <BlinkBlurB></BlinkBlurB>
-            <div className="text-white  ml-10 text-[22px] font-semibold">
+        <center>
+          <div className="mt-9">
+            <div className="text-white ml-8 text-[22px] font-semibold mb-7 flex justify-center">
               <AnimatedCounter from={displayFlowAmount} to={0} duration={animationDuration / 1000} />
             </div>
+            <div className="mb-11 flex justify-center ">
+              <div className="mt-[6px] mr-1">
+                <img src="/down-128.png" alt="logo" width={20} className="animate-pulse" />
+              </div>
+              <h2 className="text-[21px] font-medium text-gray-900 dark:text-white mr-8">
+                {creatorDAddress?.slice(0, 6)}.....{creatorDAddress?.slice(-4)}
+              </h2>
+              <BlinkBlurB></BlinkBlurB>
+              <h2 className="text-[21px] font-medium text-gray-900 dark:text-white ml-8">
+                {reciverAddress?.slice(0, 6)}.....{reciverAddress?.slice(-4)}
+              </h2>
+            </div>
           </div>
-        </div>
+        </center>
       )}
 
+      {/* <AnimatedCounter from={displayFlowAmount} to={0} duration={animationDuration / 1000} /> */}
       {activeAddress && isStreaming === 0 && internalTxns.length > 0 && (
         <center>
           <div className="backdrop-blur-[5px] bg-[rgba(21,6,29,0.8)] mt-8 w-[900px] p-2 rounded-2xl mb-5  border-solid border-2">
@@ -393,7 +406,7 @@ const SearchStream: React.FC<SearchStreamProps> = () => {
       )}
 
       {activeAddress && appId > 0 && isStreaming === 128 && (
-        <div className="hero antialiased mt-16 text-[21px]">
+        <div className="hero antialiased mt-10 text-[21px]">
           <div className="backdrop-blur-[5px] bg-[rgba(44,33,59,0.48)]  p-4 rounded-2xl mb-5 border-white border-solid border-2">
             <table className="border-3  text-gray-500 dark:text-gray-400">
               <tbody>

@@ -30,6 +30,7 @@ const Withdraw: React.FC<WithdrawProps> = () => {
   const [streamFlowRate, setStreamFlowRate] = useState<number>(0)
   const [totalUserWithdraw, setTotalUserWithdraw] = useState<number>(0)
   const [reciverAddress, setReciverAddress] = useState<string>()
+  const [creatorDAddress, setcreatorDAddress] = useState<string>()
   const [epochStreamStartTime, setepochStreamStartTime] = useState<number>(0)
   const [animationDuration, setAnimationDuration] = useState<number>(0)
   const [userAccountBalance, setUserAccountBalance] = useState<number>()
@@ -157,6 +158,7 @@ const Withdraw: React.FC<WithdrawProps> = () => {
 
       setepochStreamStartTime(startTime)
       setepochStreamfinishTime(endTime)
+      setcreatorDAddress(streamCreator)
 
       const convTotalwithdrawAmount = withdrawnAmount / 1000000
       const convstreamalgoFlowRate = rate / 1000000
@@ -221,7 +223,7 @@ const Withdraw: React.FC<WithdrawProps> = () => {
       <center>
         <button
           data-test-id="connect-wallet"
-          className="btn px-8 bg-purple-700 z-10 mt-2 right-2 hover:bg-purple-800 text-white pb-3 pt-2 text-xl rounded-2xl absolute "
+          className="btn px-5 bg-purple-700 z-10 mt-2 right-2 hover:bg-purple-800 text-white pb-3 pt-2 text-xl rounded-2xl absolute "
           onClick={toggleWalletModal}
         >
           {!activeAddress ? 'Connect Wallet' : activeAddress && `Balance ${userAccountBalance} algos`}
@@ -236,7 +238,7 @@ const Withdraw: React.FC<WithdrawProps> = () => {
         </div>
       </center>
 
-      <div className="text-center rounded-2xl mt-8 border-solid border-2 border-white p-4 max-w-md backdrop-blur-[5px] bg-[rgba(21,6,29,0.8)] mx-auto">
+      <div className="text-center rounded-2xl mt-8 border-solid border-white p-4 max-w-md backdrop-blur-[5px] bg-[rgba(21,6,29,0.8)] mx-auto">
         <div className="max-w-md">
           <label className="block mb-2 text-lg font-medium text-gray-900 dark:text-white">Enter Your StreamId</label>
           <input
@@ -253,15 +255,27 @@ const Withdraw: React.FC<WithdrawProps> = () => {
         </div>
       </div>
       {activeAddress && appId > 0 && isStreaming === 128 && (
-        <div className="mt-20 mx-auto max-w-xl">
-          <div className="mb-11 flex">
-            <h2 className="text-[22px] font-medium text-gray-900 dark:text-white mr-8">FlowStarted</h2>
-            <BlinkBlurB></BlinkBlurB>
-            <div className="text-white ml-10 text-[22px] font-semibold ">
-              <AnimatedCounter from={finalDisplayAmount} to={streamContractBalance} duration={animationDuration / 1000} />
+        <center>
+          <div className="mt-11">
+            <div className="text-white text-[22px] font-semibold mb-7 flex justify-center">
+              <div className="justify-start  w-full flex max-w-[240px]">
+                <AnimatedCounter from={finalDisplayAmount} to={streamContractBalance} duration={animationDuration / 1000} />
+              </div>
+            </div>
+            <div className="mb-11 flex justify-center">
+              <h2 className="text-[21px] font-medium text-gray-900 dark:text-white mr-8">
+                {creatorDAddress?.slice(0, 6)}.....{creatorDAddress?.slice(-4)}
+              </h2>
+              <BlinkBlurB></BlinkBlurB>
+              <h2 className="text-[21px] font-medium text-gray-900 dark:text-white ml-8">
+                {reciverAddress?.slice(0, 6)}.....{reciverAddress?.slice(-4)}
+              </h2>
+              <div className="m-1">
+                <img src="/up-128.png" alt="logo" width={20} className="animate-pulse ml-1" />
+              </div>
             </div>
           </div>
-        </div>
+        </center>
       )}
       {activeAddress && appId > 0 && isStreaming === 128 && (
         <div className="hero antialiased text-[21px]">

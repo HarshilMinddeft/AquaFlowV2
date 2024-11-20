@@ -95,19 +95,19 @@ const AccountHistory: React.FC<AccountHistoryProps> = () => {
         const formattedStartTime = dayjs.unix(startTime).format('MM/DD/YYYY, h:mm:ss A')
         const formattedEndTime = dayjs.unix(endTime).format('MM/DD/YYYY, h:mm:ss A')
 
-        // if (streamCreator == activeAddress) {
-        allStreamData.push({
-          streamId,
-          recipient,
-          streamCreator,
-          balance,
-          flowRate: rate / 1e6,
-          startTime: formattedStartTime,
-          endTime: formattedEndTime,
-          withdrawnAmount: withdrawnAmount / 1e6,
-          isStreaming,
-        })
-        // }
+        if (streamCreator == activeAddress || recipient == activeAddress) {
+          allStreamData.push({
+            streamId,
+            recipient,
+            streamCreator,
+            balance,
+            flowRate: rate / 1e6,
+            startTime: formattedStartTime,
+            endTime: formattedEndTime,
+            withdrawnAmount: withdrawnAmount / 1e6,
+            isStreaming,
+          })
+        }
       }
 
       setStreamData(allStreamData)
@@ -130,7 +130,7 @@ const AccountHistory: React.FC<AccountHistoryProps> = () => {
       <center>
         <button
           data-test-id="connect-wallet"
-          className="btn px-8 bg-purple-700 z-10 mt-2 right-2 hover:bg-purple-800 text-white pb-3 pt-2 text-xl rounded-2xl absolute "
+          className="btn px-5 bg-purple-700 z-10 mt-2 right-2 hover:bg-purple-800 text-white pb-3 pt-2 text-xl rounded-2xl absolute "
           onClick={toggleWalletModal}
         >
           {!activeAddress ? 'Connect Wallet' : activeAddress && `Balance ${userAccountBalance} algos`}

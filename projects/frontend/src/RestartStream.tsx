@@ -184,7 +184,7 @@ const RestartStream: React.FC<RestartStreamProps> = () => {
       <center>
         <button
           data-test-id="connect-wallet"
-          className="btn px-8 bg-purple-700 z-10 mt-2 right-2 hover:bg-purple-800 text-white pb-3 pt-2 text-xl rounded-2xl absolute "
+          className="btn px-5 bg-purple-700 z-10 mt-2 right-2 hover:bg-purple-800 text-white pb-3 pt-2 text-xl rounded-2xl absolute "
           onClick={toggleWalletModal}
         >
           {!activeAddress ? 'Connect Wallet' : activeAddress && `Balance ${userAccountBalance} algos`}

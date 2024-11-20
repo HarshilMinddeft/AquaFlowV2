@@ -38,6 +38,7 @@ const Home: React.FC<HomeProps> = () => {
   const [streamFlowRate, setStreamFlowRate] = useState<number>(0)
   const [totalUserWithdraw, setTotalUserWithdraw] = useState<number>(0)
   const [reciverAddress, setReciverAddress] = useState<string>()
+  const [creatorDAddress, setcreatorDAddress] = useState<string>()
   const [animationDuration, setAnimationDuration] = useState<number>(0)
   const [epochStreamStartTime, setepochStreamStartTime] = useState<number>(0)
   const [userAccountBalance, setUserAccountBalance] = useState<number>()
@@ -66,11 +67,6 @@ const Home: React.FC<HomeProps> = () => {
 
     algorand.client.algod,
   )
-
-  const handleAppIdChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const inputAppId = event.target.value
-    setStreamId(BigInt(inputAppId))
-  }
 
   async function fetchStreamBoxData() {
     try {
@@ -101,6 +97,7 @@ const Home: React.FC<HomeProps> = () => {
 
       setepochStreamStartTime(startTime)
       setepochStreamfinishTime(endTime)
+      setcreatorDAddress(streamCreator)
 
       const convTotalwithdrawAmount = withdrawnAmount / 1000000
       const convstreamalgoFlowRate = rate / 1000000
@@ -336,7 +333,7 @@ const Home: React.FC<HomeProps> = () => {
       <center>
         <button
           data-test-id="connect-wallet"
-          className="btn px-8 bg-purple-700 z-10 mt-2 right-2 hover:bg-purple-800 text-white pb-3 pt-2 text-xl rounded-2xl absolute "
+          className="btn px-5 bg-purple-700 z-10 mt-2 right-2 hover:bg-purple-800 text-white pb-3 pt-2 text-xl rounded-2xl absolute "
           onClick={toggleWalletModal}
         >
           {!activeAddress ? 'Connect Wallet' : activeAddress && `Balance ${userAccountBalance} algos`}
@@ -384,7 +381,7 @@ const Home: React.FC<HomeProps> = () => {
       )}
 
       {activeAddress && appId > 0 && isStreaming === 128 && (
-        <div className="text-center rounded-2xl mt-11 border-solid border-2 slate-800 p-4 max-w-md backdrop-blur-[5px] bg-[rgba(21,6,29,0.8)]  mx-auto">
+        <div className="text-center rounded-2xl mt-7 border-solid border-2 slate-800 p-3 max-w-md backdrop-blur-[5px] bg-[rgba(21,6,29,0.8)]  mx-auto">
           <label className="block text-[19px] mb-2 font-medium text-gray-900 dark:text-white">Stream ID</label>
           <input
             disabled={true}
@@ -395,27 +392,28 @@ const Home: React.FC<HomeProps> = () => {
         </div>
       )}
 
-      {/* {activeAddress && appId > 0 && isStreaming === 128 && (
-        <div className="mt-20 ml-[640px]">
-          <div className="mb-11 flex">
-            <h2 className="text-[22px] font-medium text-gray-900 dark:text-white mr-8">Flow Started</h2>
-            <BlinkBlurB></BlinkBlurB>
-            <div className="text-white  ml-10 text-[22px] font-semibold">
-              <AnimatedCounter from={displayFlowAmount} to={0} duration={animationDuration / 1000} />
-            </div>
-          </div>
-        </div>
-      )} */}
       {activeAddress && appId > 0 && isStreaming === 128 && (
-        <div className="mt-20 mx-auto max-w-xl">
-          <div className="mb-11 flex ">
-            <h2 className="text-[22px] font-medium text-gray-900 dark:text-white mx-8">FlowStarted</h2>
-            <BlinkBlurB></BlinkBlurB>
-            <div className="text-white ml-10 text-[22px] font-semibold">
-              <AnimatedCounter from={displayFlowAmount} to={0} duration={animationDuration / 1000} />
+        <center>
+          <div className="mt-9">
+            <div className="text-white ml-10 text-[22px] font-semibold mb-7 flex justify-center">
+              <div className="justify-start w-full flex max-w-[240px]">
+                <AnimatedCounter from={displayFlowAmount} to={0} duration={animationDuration / 1000} />
+              </div>
+            </div>
+            <div className="mb-11 flex justify-center ">
+              <div className="mt-[6px] mr-1">
+                <img src="/down-128.png" alt="logo" width={20} className="animate-pulse" />
+              </div>
+              <h2 className="text-[21px] font-medium text-gray-900 dark:text-white mr-8">
+                {creatorDAddress?.slice(0, 6)}.....{creatorDAddress?.slice(-4)}
+              </h2>
+              <BlinkBlurB></BlinkBlurB>
+              <h2 className="text-[21px] font-medium text-gray-900 dark:text-white ml-8">
+                {reciverAddress?.slice(0, 6)}.....{reciverAddress?.slice(-4)}
+              </h2>
             </div>
           </div>
-        </div>
+        </center>
       )}
       {activeAddress && isStreaming === 0 && internalTxns.length > 0 && (
         <center>
@@ -559,7 +557,7 @@ const Home: React.FC<HomeProps> = () => {
         </div>
       )}
       {activeAddress && appId > 0 && isStreaming === 128 && (
-        <div className="hero antialiased mt-16 text-[21px]">
+        <div className="hero antialiased mt-11 text-[21px]">
           <div className="backdrop-blur-[5px] bg-[rgba(44,33,59,0.48)]  p-4 rounded-2xl mb-5 border-white border-solid border-2">
             <table className="border-3  text-gray-500 dark:text-gray-400">
               <tbody>

@@ -6,6 +6,7 @@ import algosdk from 'algosdk'
 import { SnackbarProvider } from 'notistack'
 import { Route, Routes } from 'react-router-dom'
 import AccountHistory from './AccountHistory'
+import Display from './Display'
 import Home from './Home'
 import RestartStream from './RestartStream'
 import SearchStream from './SearchStream'
@@ -56,6 +57,7 @@ export default function App() {
     <SnackbarProvider maxSnack={3}>
       <WalletProvider value={walletProviders}>
         <Routes>
+          <Route path="/Display" element={<Display />} />
           <Route path="/" element={<Home />} />
           <Route path="/Withdraw" element={<Withdraw />} />
           <Route path="/History" element={<AccountHistory />} />
