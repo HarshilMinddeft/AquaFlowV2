@@ -18,7 +18,7 @@ const Nav = () => {
         <a className="h-auto w-auto flex ml-3 flex-row items-center">
           <img src="/logoD.webp" alt="logo" width={40} height={50} className="cursor-default animate-pulse" />
           <p className="text-[23px] ml-2 mt-3 font-medium text-gray-900 dark:text-white ">AquaFlow</p>
-          <p className="text-[15px] ml-1 mt-9  text-gray-900 dark:text-white ">V2</p>
+          <p className="text-[15px] ml-1 mt-9  text-gray-900 dark:text-white ">V1</p>
         </a>
         <div className="w-full h-full flex flex-row justify-center pr-24 mr-64">
           <div className="w-[600px] px-[10px] h-full flex flex-row items-center justify-between">

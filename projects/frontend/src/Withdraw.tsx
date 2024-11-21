@@ -64,11 +64,10 @@ const Withdraw: React.FC<WithdrawProps> = () => {
       if (error instanceof Error) {
         if (error.message.includes('404')) {
           // If a 404 error occurs (application not found), show an error message
-          toast.error('App ID does not exist. Please enter a valid App ID.')
-          console.error('App ID not found:', error.message)
+          toast.error('Stream ID does not exist. Please enter a valid Stream ID.')
         } else {
           console.error('An error occurred while fetching the app ID:', error.message)
-          toast.error('Failed to validate App ID. Please try again.')
+          toast.error('Failed to validate Stream ID. Please try again.')
         }
       }
     }
@@ -117,13 +116,10 @@ const Withdraw: React.FC<WithdrawProps> = () => {
       }
 
       const elapsedtime = currentTime - epochStreamStartTime
-      // console.log('elapsedtime', elapsedtime)
       const TotalStreamed = elapsedtime * streamFlowRate * 1000000
-      // console.log('TotalStreamed', TotalStreamed)
       const elapsedAmount = TotalStreamed - totalUserWithdraw * 1000000
       const FinalDisplayAmount = elapsedAmount / 1000000
       setFinalDisplayAmount(FinalDisplayAmount)
-      // console.log('elapsedAmount', elapsedAmount / 1000000)
       //////
       setAnimationDuration(totalDuration)
     }
@@ -139,9 +135,6 @@ const Withdraw: React.FC<WithdrawProps> = () => {
       const NameofBox = boxValueResponse.name
       const dataView = new DataView(NameofBox.buffer)
       const decodedValue = dataView.getBigUint64(0, false)
-      // console.log('Box Name decoded:', decodedValue)
-      // console.log('Box Name:', boxValueResponse.name)
-      // console.log('Box Value:', boxValueResponse.value)
 
       const ValueofBox = boxValueResponse.value
       const boxvalues = new DataView(ValueofBox.buffer)
@@ -175,6 +168,9 @@ const Withdraw: React.FC<WithdrawProps> = () => {
       setStreamFlowRate(convstreamalgoFlowRate)
       setTotalUserWithdraw(convTotalwithdrawAmount)
       setReciverAddress(recipient)
+      if (isStreamingRaw == 0) {
+        toast.error('Incorrect StreamID')
+      }
     } catch (error) {
       console.error('Error fetching box data:', error)
       toast.error('Incorrect StreamID')
@@ -258,7 +254,7 @@ const Withdraw: React.FC<WithdrawProps> = () => {
         <center>
           <div className="mt-11">
             <div className="text-white text-[22px] font-semibold mb-7 flex justify-center">
-              <div className="justify-start  w-full flex max-w-[240px]">
+              <div className="justify-start  w-full flex max-w-[160px]">
                 <AnimatedCounter from={finalDisplayAmount} to={streamContractBalance} duration={animationDuration / 1000} />
               </div>
             </div>
@@ -299,7 +295,7 @@ const Withdraw: React.FC<WithdrawProps> = () => {
                   <th className="text-white ml-auto mt-1 mr-2 ">{streamStartTime}</th>
                 </tr>
                 <tr className="flex border-solid border-b border-slate-200">
-                  <th className="text-white font-medium mt-2">StreamfinishTime</th>
+                  <th className="text-white font-medium mt-2">StreamFinishTime</th>
                   <th className="text-white ml-auto mt-1 mr-2 ">{streamFinishTime}</th>
                 </tr>
                 <tr className="flex border-solid border-b border-slate-200">

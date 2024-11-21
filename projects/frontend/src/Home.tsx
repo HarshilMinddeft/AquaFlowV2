@@ -167,7 +167,7 @@ const Home: React.FC<HomeProps> = () => {
       }
     } catch (error) {
       console.error('Error deleting Stream:', error)
-      toast.error('Error deleting contract or Invalid User')
+      toast.error('Only owner can delete this stream')
     }
   }
 
@@ -396,7 +396,7 @@ const Home: React.FC<HomeProps> = () => {
         <center>
           <div className="mt-9">
             <div className="text-white ml-10 text-[22px] font-semibold mb-7 flex justify-center">
-              <div className="justify-start w-full flex max-w-[240px]">
+              <div className="justify-start w-full flex max-w-[190px]">
                 <AnimatedCounter from={displayFlowAmount} to={0} duration={animationDuration / 1000} />
               </div>
             </div>
@@ -483,7 +483,7 @@ const Home: React.FC<HomeProps> = () => {
                   />
                 </div>
                 <div className="mt-4 firstField">
-                  <label className="text-lg mr-[179px] font-medium text-gray-900 dark:text-white ">Custom Flowrate Per/sec</label>
+                  <label className="text-lg mr-[179px] font-medium text-gray-900 dark:text-white ">Custom Flow-rate Per/sec</label>
                   <div className="flex items-center">
                     <input
                       type="number"
@@ -504,7 +504,7 @@ const Home: React.FC<HomeProps> = () => {
                   <p className="mt-3 mb-3  block text-lg font-medium text-gray-900 dark:text-white">OR</p>
                 </div>
                 <div className="mt-1 secondField">
-                  <label className="block mr-48 text-lg font-medium text-gray-900 dark:text-white">Auto Flowrate Per/sec</label>
+                  <label className="block mr-48 text-lg font-medium text-gray-900 dark:text-white">Auto Flow-rate Per/sec</label>
                   <div className="flex items-center">
                     <select
                       className="bg-gray-50 border border-gray-300 text-gray-900 text-[20px] rounded-lg focus:ring-blue-500 focus:border-blue-500 p-3 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 cursor-pointer"
@@ -574,7 +574,7 @@ const Home: React.FC<HomeProps> = () => {
                   <th className="text-white ml-auto mt-2 mr-2 ">{streamStartTime}</th>
                 </tr>
                 <tr className="flex border-solid border-b border-slate-200">
-                  <th className="text-white font-medium mt-2">StreamfinishTime</th>
+                  <th className="text-white font-medium mt-2">StreamFinishTime</th>
                   <th className="text-white ml-auto mt-2 mr-2 ">{streamFinishTime}</th>
                 </tr>
                 <tr className="flex border-solid border-b border-slate-200">

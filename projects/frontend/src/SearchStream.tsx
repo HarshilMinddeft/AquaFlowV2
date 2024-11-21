@@ -122,6 +122,11 @@ const SearchStream: React.FC<SearchStreamProps> = () => {
       setStreamFlowRate(convstreamalgoFlowRate)
       setTotalUserWithdraw(convTotalwithdrawAmount)
       setReciverAddress(recipient)
+      if (isStreamingRaw == 0 && creatorDAddress == activeAddress) {
+        toast.error('Stream of this Id has stopped resume it through history page')
+      } else if (isStreamingRaw == 0) {
+        toast.error('Incorrect StreamID')
+      }
     } catch (error) {
       console.error('Error fetching box data:', error)
       toast.error('Incorrect StreamID')
@@ -168,7 +173,7 @@ const SearchStream: React.FC<SearchStreamProps> = () => {
       }
     } catch (error) {
       // console.error('Error deleting contract:', error)
-      toast.error('Error deleting contract or Invalid User')
+      toast.error('Only owner can delete this stream')
     }
   }
 
@@ -427,7 +432,7 @@ const SearchStream: React.FC<SearchStreamProps> = () => {
                   <th className="text-white ml-auto mt-2 mr-2 ">{streamStartTime}</th>
                 </tr>
                 <tr className="flex border-solid border-b border-slate-200">
-                  <th className="text-white font-medium mt-2">StreamfinishTime</th>
+                  <th className="text-white font-medium mt-2">StreamFinishTime</th>
                   <th className="text-white ml-auto mt-2 mr-2 ">{streamFinishTime}</th>
                 </tr>
                 <tr className="flex border-solid border-b border-slate-200">
