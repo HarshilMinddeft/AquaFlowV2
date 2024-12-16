@@ -12,7 +12,8 @@ AquaFlowV2/projects/AquaFlowV2/smart_contracts
 ****************************************************************************                                                                                      
 # Frontend
 
-Frontend is for frontend code, For userInteraction code.                                             
+Frontend is made with react and ts.                                             
+Below files consist core code.
 
 AquaFlowV2/projects/frontend/src
 /Home.tsx,
