@@ -45,7 +45,8 @@
 Path=> AquaFlowV2/projects/AquaFlowV2/smart_contracts
 /AquaFlowV2/ Contract.py
 
-****************************************************************************                                                   ## Frontend ⚡
+************************************************************************************************                                                  
+## Frontend ⚡
 
 ✈️  frontend folder is for Frontend code                                    
 | Below files consist core code.
