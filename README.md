@@ -8,6 +8,7 @@ AquaFlowV2 is for smartContract
 AquaFlowV2/projects/AquaFlowV2/smart_contracts
 /AquaFlowV2/ Contract.py
 
+****************************************************************************                                                                                      
 
 Frontend is for frontend code.
 AquaFlowV2/projects/frontend/src
@@ -15,9 +16,11 @@ AquaFlowV2/projects/frontend/src
 RestartStream.tsx,
 SearchStream.tsx,
 Withdraw.tsx,
+AccountHistory.tsx,
+
 In method.ts file all the contract functions are defined that are used for interecting with contract.
 
-///////////////////////////////////////////////////////
+//////////////////////////////////////////////////////
 
 
 Welcome to your new AlgoKit project!
