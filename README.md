@@ -18,7 +18,8 @@
 / Versatile Use Cases: Suitable for payroll, subscription services, rent payments, grants, and more, It redefines how funds are distributed, ensuring fairness and accountability.
 
 ## AquaFlow Modules
-file:///home/harshilm/Pictures/Screenshots/Screenshot%20from%202024-12-16%2022-11-49.png
+![Screenshot from 2024-12-16 22-11-49](https://github.com/user-attachments/assets/e987a78c-50b1-4e5e-bb74-77a5af7b919f)
+
 
 
 
