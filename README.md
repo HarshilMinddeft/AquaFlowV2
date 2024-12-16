@@ -3,8 +3,19 @@
 ///////////////////////////////////////////////////////
 
 Inside project folder there are two folders 
-AquaFlowV2 is for smartContract.
+
+AquaFlowV2 is for smartContract      
+AquaFlowV2/projects/AquaFlowV2/smart_contracts
+/AquaFlowV2/ Contract.py
+
+
 Frontend is for frontend code.
+AquaFlowV2/projects/frontend/src
+/Home.tsx,
+RestartStream.tsx,
+SearchStream.tsx,
+Withdraw.tsx,
+In method.ts file all the contract functions are defined that are used for interecting with contract.
 
 ///////////////////////////////////////////////////////
 
