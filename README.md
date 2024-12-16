@@ -5,7 +5,7 @@
 * Traditional payment systems for recurring transactions, like payroll, subscriptions, and grants, are inefficient and inflexible. Fixed schedules cause delays, overpayments, and lack of transparency. Payments often involve intermediaries, leading to high fees and limited control for both payers and recipients. 
 
 *********************************************************************************
-## Features and solution by AquaFlow
+## Features and solution by AquaFlow ✨
 
 / AquaFlow leverages Algorand's blockchain technology to enable real-time token streaming for payments, introducing a flexible and user-centric financial system. Key features include:
 
@@ -16,6 +16,11 @@
 / Cost Efficiency: Built on Algorand, our Dapp ensures low transaction fees and fast finality, making real-time microtransactions scalable and cost-effective.
 
 / Versatile Use Cases: Suitable for payroll, subscription services, rent payments, grants, and more, It redefines how funds are distributed, ensuring fairness and accountability.
+
+## AquaFlow Modules
+file:///home/harshilm/Pictures/Screenshots/Screenshot%20from%202024-12-16%2022-11-49.png
+
+
 
 ***********************************************************************************************************
 
