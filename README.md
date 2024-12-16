@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////
 
 Inside project folder there are two folders 
-AquaFlowV2 is for smartContract
+AquaFlowV2 is for smartContract.
 Frontend is for frontend code.
 
 ///////////////////////////////////////////////////////
