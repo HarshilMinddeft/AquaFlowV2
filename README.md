@@ -1,7 +1,25 @@
-# AquaFlowV2
-# AlgoBharatDevTrackCompetition
+# 🚀 Transforming Payments with Real-Time Blockchain Streaming 🌐
+
+**
+Introduction
+
+* Traditional payment systems for recurring transactions, like payroll, subscriptions, and grants, are inefficient and inflexible. Fixed schedules cause delays, overpayments, and lack of transparency. Payments often involve intermediaries, leading to high fees and limited control for both payers and recipients. 
 
 *********************************************************************************
+# Features and solution by AquaFlow
+
+/ AquaFlow leverages Algorand's blockchain technology to enable real-time token streaming for payments, introducing a flexible and user-centric financial system. Key features include:
+
+/ Continuous and Precise Payments: Instead of bulk payments or rigid schedules, funds are streamed continuously based on a flow rate, allowing users to pay or receive exactly what is owed for the time or service used.
+
+/ Decentralized Control: Payments are trustless and transparent, eliminating the need for intermediaries while ensuring that both parties retain full control over their funds.
+
+/ Cost Efficiency: Built on Algorand, our Dapp ensures low transaction fees and fast finality, making real-time microtransactions scalable and cost-effective.
+
+/ Versatile Use Cases: Suitable for payroll, subscription services, rent payments, grants, and more, It redefines how funds are distributed, ensuring fairness and accountability.
+
+***********************************************************************************************************
+
 Inside project folder there are two folders 
 One is for SmartContract and second one is for Frontend integration and ui
 *********************************************************************************
