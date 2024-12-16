@@ -1,4 +1,4 @@
-# 🚀 Transforming Payments with Real-Time Blockchain Streaming 🌐
+# 💸 Transforming Payments with Real-Time Blockchain Streaming 🌐
 
 ## Introduction
 
