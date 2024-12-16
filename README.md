@@ -1,18 +1,21 @@
 # AquaFlowV2
 # AlgoBharatDevTrackCompetition
+
+*********************************************************************************
+Inside project folder there are two folders 
+One is for SmartContract and second one is for Frontend integration and ui
 *********************************************************************************
 # SmartContract
 
-Inside project folder there are two folders 
+AquaFlowV2 folder is for smartContract      
 
-AquaFlowV2 is for smartContract      
 AquaFlowV2/projects/AquaFlowV2/smart_contracts
 /AquaFlowV2/ Contract.py
 
 ****************************************************************************                                                                                      
 # Frontend
 
-Frontend is made with react and ts.                                             
+Frontend is made with react and ts.                                        
 Below files consist core code.
 
 AquaFlowV2/projects/frontend/src
@@ -27,6 +30,7 @@ In method.ts file all the contract functions are defined that are used for inter
 **************************************************************************************************************************
 
 ## Before starting any project Make sure you are inside fronted code folder or AquaflowV2 folder Dont run or start from root folder.
+
 npm run dev for frontend 
 
 ********************************************************************************************************************************
@@ -47,11 +51,3 @@ To get started refer to `README.md` files in respective sub-projects in the `pro
 
 To learn more about algokit, visit [documentation](https://github.com/algorandfoundation/algokit-cli/blob/main/docs/algokit.md).
 
-### GitHub Codespaces
-
-To get started execute:
-
-1. `algokit generate devcontainer` - invoking this command from the root of this repository will create a `devcontainer.json` file with all the configuration needed to run this project in a GitHub codespace. [Run the repository inside a codespace](https://docs.github.com/en/codespaces/getting-started/quickstart) to get started.
-2. `algokit init` - invoke this command inside a github codespace to launch an interactive wizard to guide you through the process of creating a new AlgoKit project
-
-Powered by [Copier templates](https://copier.readthedocs.io/en/stable/).
