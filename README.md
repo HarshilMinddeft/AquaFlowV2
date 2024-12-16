@@ -10,7 +10,8 @@ AquaFlowV2/projects/AquaFlowV2/smart_contracts
 
 ****************************************************************************                                                                                      
 
-Frontend is for frontend code.
+Frontend is for frontend code, For userInteraction code.                                             
+
 AquaFlowV2/projects/frontend/src
 /Home.tsx,
 RestartStream.tsx,
@@ -21,7 +22,7 @@ AccountHistory.tsx,
 In method.ts file all the contract functions are defined that are used for interecting with contract.
 
 //////////////////////////////////////////////////////
-
+**************************************************************************************************************************
 
 Welcome to your new AlgoKit project!
 
