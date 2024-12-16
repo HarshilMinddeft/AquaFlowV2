@@ -1,5 +1,14 @@
 # AquaFlowV2
 
+///////////////////////////////////////////////////////
+
+Inside project folder there are two folders 
+AquaFlowV2 is for smartContract
+Frontend is for frontend code.
+
+///////////////////////////////////////////////////////
+
+
 Welcome to your new AlgoKit project!
 
 This is your workspace root. A `workspace` in AlgoKit is an orchestrated collection of standalone projects (backends, smart contracts, frontend apps and etc).
