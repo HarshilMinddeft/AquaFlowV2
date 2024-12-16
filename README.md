@@ -1,6 +1,6 @@
 # 🚀 Transforming Payments with Real-Time Blockchain Streaming 🌐
 
-**
+*********************************************************************************
 Introduction
 
 * Traditional payment systems for recurring transactions, like payroll, subscriptions, and grants, are inefficient and inflexible. Fixed schedules cause delays, overpayments, and lack of transparency. Payments often involve intermediaries, leading to high fees and limited control for both payers and recipients. 
