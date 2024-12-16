@@ -42,16 +42,15 @@
 
 | AquaFlowV2 folder is for smartContract      
 
-| AquaFlowV2/projects/AquaFlowV2/smart_contracts
+Path✈️  AquaFlowV2/projects/AquaFlowV2/smart_contracts
 /AquaFlowV2/ Contract.py
 
 ****************************************************************************                                                                                      
 ## Frontend ⚡
-
-| Frontend is made with react and ts.                                        
+| frontend folder is for Frontend code                                    
 | Below files consist core code.
 
-| AquaFlowV2/projects/frontend/src/Home.tsx,
+Path✈️ AquaFlowV2/projects/frontend/src/Home.tsx,
 
 | RestartStream.tsx,
 
