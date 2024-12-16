@@ -17,38 +17,47 @@
 
 / Versatile Use Cases: Suitable for payroll, subscription services, rent payments, grants, and more, It redefines how funds are distributed, ensuring fairness and accountability.
 
-## AquaFlow Modules
+## AquaFlow modules
 ![Screenshot from 2024-12-16 22-11-49](https://github.com/user-attachments/assets/e987a78c-50b1-4e5e-bb74-77a5af7b919f)
 
+![Screenshot from 2024-12-16 22-12-43](https://github.com/user-attachments/assets/cc7ae4a0-16c7-4cb6-95d9-5d5dedc33345)
 
+![Screenshot from 2024-12-16 22-13-02](https://github.com/user-attachments/assets/e7ec1f7c-7791-4b7f-b882-c39b80da7c60)
 
+![Screenshot from 2024-12-16 22-13-47](https://github.com/user-attachments/assets/41f73b77-6e5d-43c2-b25d-0731be660abd)
+
+![Screenshot from 2024-12-16 22-15-26](https://github.com/user-attachments/assets/9187ce20-8d15-409d-9b4d-c53b2d305c42)
+
+![Screenshot from 2024-12-16 22-14-41](https://github.com/user-attachments/assets/bb1e57cf-b97a-4b8c-b754-78382409c3b1)
 
 ***********************************************************************************************************
+## Project Setup Info 📄
 
-Inside project folder there are two folders 
-One is for SmartContract and second one is for Frontend integration and ui
+/ Inside project folder there are two folders.
+1. SmartContract folder - Developed using AlgoPython
+2. Frontend integration and ui - Developed using React and many more. 
+
 *********************************************************************************
-## SmartContract
+## SmartContract ⚡
 
-AquaFlowV2 folder is for smartContract      
+| AquaFlowV2 folder is for smartContract      
 
-AquaFlowV2/projects/AquaFlowV2/smart_contracts
+| AquaFlowV2/projects/AquaFlowV2/smart_contracts
 /AquaFlowV2/ Contract.py
 
 ****************************************************************************                                                                                      
-## Frontend
+## Frontend ⚡
 
-Frontend is made with react and ts.                                        
-Below files consist core code.
+| Frontend is made with react and ts.                                        
+| Below files consist core code.
 
-AquaFlowV2/projects/frontend/src
-/Home.tsx,
-RestartStream.tsx,
-SearchStream.tsx,
-Withdraw.tsx,
-AccountHistory.tsx,
+| AquaFlowV2/projects/frontend/src/Home.tsx,
+| RestartStream.tsx,
+| SearchStream.tsx,
+| Withdraw.tsx,
+| AccountHistory.tsx,
 
-In method.ts file all the contract functions are defined that are used for interecting with contract.
+| In method.ts file all the contract functions are defined that are used for interecting with contract.
 
 **************************************************************************************************************************
 
@@ -56,11 +65,11 @@ In method.ts file all the contract functions are defined that are used for inter
 
 npm run dev for frontend 
 
-********************************************************************************************************************************
+*******************************************************************************************************************************
 
 Demo Video link => https://drive.google.com/file/d/1SVAdvKb4T3v0GhcDP-kNhBge_zNBQtVA/view?usp=sharing 
 
-*********************************************************************************************************************************
+*******************************************************************************************************************************
 
 Welcome to your new AlgoKit project!
 
