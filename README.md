@@ -40,12 +40,13 @@ Demo Video link => https://drive.google.com/file/d/1SVAdvKb4T3v0GhcDP-kNhBge_zNB
 *********************************************************************************************************************************
 # Features
 
-Pure blockchain build no Database Used
-Stream algos per second
-Multiple streams at a time
-Stream history page
+Pure blockchain build no Database Used.
+Stream algos per second.
+Multiple streams at a time.
+Stream history page.
 Etc
 
+************************************************************************************************************************************
 Welcome to your new AlgoKit project!
 
 This is your workspace root. A `workspace` in AlgoKit is an orchestrated collection of standalone projects (backends, smart contracts, frontend apps and etc).
