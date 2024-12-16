@@ -1,11 +1,11 @@
-## 🚀 Transforming Payments with Real-Time Blockchain Streaming 🌐
+# 🚀 Transforming Payments with Real-Time Blockchain Streaming 🌐
 
-# Introduction
+## Introduction
 
 * Traditional payment systems for recurring transactions, like payroll, subscriptions, and grants, are inefficient and inflexible. Fixed schedules cause delays, overpayments, and lack of transparency. Payments often involve intermediaries, leading to high fees and limited control for both payers and recipients. 
 
 *********************************************************************************
-# Features and solution by AquaFlow
+## Features and solution by AquaFlow
 
 / AquaFlow leverages Algorand's blockchain technology to enable real-time token streaming for payments, introducing a flexible and user-centric financial system. Key features include:
 
@@ -22,7 +22,7 @@
 Inside project folder there are two folders 
 One is for SmartContract and second one is for Frontend integration and ui
 *********************************************************************************
-# SmartContract
+## SmartContract
 
 AquaFlowV2 folder is for smartContract      
 
@@ -30,7 +30,7 @@ AquaFlowV2/projects/AquaFlowV2/smart_contracts
 /AquaFlowV2/ Contract.py
 
 ****************************************************************************                                                                                      
-# Frontend
+## Frontend
 
 Frontend is made with react and ts.                                        
 Below files consist core code.
