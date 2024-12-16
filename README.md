@@ -52,9 +52,13 @@
 | Below files consist core code.
 
 | AquaFlowV2/projects/frontend/src/Home.tsx,
+
 | RestartStream.tsx,
+
 | SearchStream.tsx,
+
 | Withdraw.tsx,
+
 | AccountHistory.tsx,
 
 | In method.ts file all the contract functions are defined that are used for interecting with contract.
