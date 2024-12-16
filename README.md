@@ -1,6 +1,7 @@
 # AquaFlowV2
+*********************************************************************************
 
-///////////////////////////////////////////////////////
+# SmartContract
 
 Inside project folder there are two folders 
 
@@ -9,6 +10,7 @@ AquaFlowV2/projects/AquaFlowV2/smart_contracts
 /AquaFlowV2/ Contract.py
 
 ****************************************************************************                                                                                      
+# Frontend
 
 Frontend is for frontend code, For userInteraction code.                                             
 
@@ -21,7 +23,6 @@ AccountHistory.tsx,
 
 In method.ts file all the contract functions are defined that are used for interecting with contract.
 
-//////////////////////////////////////////////////////
 **************************************************************************************************************************
 
 Welcome to your new AlgoKit project!
