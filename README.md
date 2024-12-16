@@ -25,6 +25,12 @@ In method.ts file all the contract functions are defined that are used for inter
 
 **************************************************************************************************************************
 
+## Before starting any project Make sure you are inside fronted code folder or AquaflowV2 folder Dont run or start from root folder.
+npm run dev for frontend 
+
+********************************************************************************************************************************
+
+
 Welcome to your new AlgoKit project!
 
 This is your workspace root. A `workspace` in AlgoKit is an orchestrated collection of standalone projects (backends, smart contracts, frontend apps and etc).
